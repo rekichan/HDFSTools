@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Hadoop.WebHDFS;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace HDFSTools
 {
@@ -21,14 +22,13 @@ namespace HDFSTools
         private cls_Config config;
         private bool linkStatus;
         private bool initTaskFlag = true;
-        private string port;
-        private string host;
-        private string userName;
-        private string lastPath;
-        private string prevPath;
+        private string currentPath;
         private object lockObject;
         private ImageList smallImageList;
         private ImageList largeImageList;
+        private Stack<string> forwardStack;
+        private Stack<string> backwardStack;
+        private delegate void showDirectory(TreeNode subTN, string path);
         #endregion
 
         #region API
@@ -52,6 +52,10 @@ namespace HDFSTools
             //实例化锁对象
             lockObject = new object();
 
+            //实例化前进后退栈对象
+            forwardStack = new Stack<string>();
+            backwardStack = new Stack<string>();
+
             //获取窗口句柄
             cls_Msg.hwndFrmMain = this.Handle;
 
@@ -68,6 +72,46 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void tv_FolderList_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            tv_FolderList.SelectedNode = e.Node;
+            TreeNode super = e.Node;
+            string path = super.FullPath;
+
+            for (int i = 0; i < super.Nodes.Count; i++)
+            {
+                TreeNode sub = super.Nodes[i];
+                string directory = path + "/" + sub.Text;
+                HDFS.client.GetDirectoryStatus(directory)
+               .ContinueWith(ds =>
+               {
+                   ds.Result.Directories.ToList()
+                   .ForEach(f =>
+                   {
+                       showDirectory sd = new showDirectory(GetFirstDirectory);
+                       sd.BeginInvoke(sub, f.PathSuffix, null, null);
+                       //PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES, f.PathSuffix);
+                   });
+               });
+                System.Threading.Thread.Sleep(5);
+            }
+        }
+
+        private void tv_FolderList_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            e.Node.Collapse(false);
+        }
+
+        private void tsb_Refresh_Click(object sender, EventArgs e)
+        {
+            CommonEnterTargetPath(this.currentPath);
+        }
+
+        private void tsb_Enter_Click(object sender, EventArgs e)
+        {
+            TCEnterTargetPath(tstb_CurrentPath.Text);
+        }
+
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (lv_ShowFile.SelectedItems.Count <= 0)
@@ -83,10 +127,12 @@ namespace HDFSTools
 
             string newPath = currentPath + infos[0] + "/";
             tstb_CurrentPath.Text = currentPath + infos[0];
+            this.currentPath = tstb_CurrentPath.Text;
+            backwardStack.Push(this.currentPath);
+            forwardStack.Clear();
 
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
-
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
             lv_ShowFile.Columns.Add("permission", "permission", 100);
@@ -94,89 +140,21 @@ namespace HDFSTools
             lv_ShowFile.Columns.Add("group", "group", 100);
             lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
 
-            HDFS.client.GetDirectoryStatus(newPath)
-                .ContinueWith(ds =>
-                {
-                    ds.Result.Entries.ToList()
-                    .ForEach(f =>
-                    {
-                        string permission = f.Permission;
-                        string owner = f.Owner;
-                        string group = f.Group;
-                        string size = f.Length.ToString();
-                        string replication = f.Replication.ToString();
-                        string name = f.PathSuffix;
-                        string type = f.Type;
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append(name)
-                        .Append("~>")
-                        .Append(size)
-                        .Append("~>")
-                        .Append(permission)
-                        .Append("~>")
-                        .Append(owner)
-                        .Append("~>")
-                        .Append(group)
-                        .Append("~>")
-                        .Append(replication)
-                        .Append("~>")
-                        .Append(type);
-                        /*.Append("~>")
-                        .Append(tstb_CurrentPath.Text);*/
-
-                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
-                    });
-                });
+            CommonEnterTargetPath(newPath);
         }
 
         private void tv_FolderList_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (initTaskFlag)
+                return;
+
             string currentPath = tv_FolderList.SelectedNode.FullPath;
-            lv_ShowFile.Clear();
-            lv_ShowFile.AllowColumnReorder = true;
-
             tstb_CurrentPath.Text = currentPath;
+            this.currentPath = tstb_CurrentPath.Text;
+            backwardStack.Push(this.currentPath);
+            forwardStack.Clear();
 
-            lv_ShowFile.Columns.Add("name", "name", 250);
-            lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
-            lv_ShowFile.Columns.Add("owner", "owner", 100);
-            lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
-
-            HDFS.client.GetDirectoryStatus(tstb_CurrentPath.Text)
-                .ContinueWith(ds =>
-                {
-                    ds.Result.Entries.ToList()
-                    .ForEach(f =>
-                    {
-                        string permission = f.Permission;
-                        string owner = f.Owner;
-                        string group = f.Group;
-                        string size = f.Length.ToString();
-                        string replication = f.Replication.ToString();
-                        string name = f.PathSuffix;
-                        string type = f.Type;
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append(name)
-                        .Append("~>")
-                        .Append(size)
-                        .Append("~>")
-                        .Append(permission)
-                        .Append("~>")
-                        .Append(owner)
-                        .Append("~>")
-                        .Append(group)
-                        .Append("~>")
-                        .Append(replication)
-                        .Append("~>")
-                        .Append(type);
-                        /*.Append("~>")
-                        .Append(tstb_CurrentPath.Text);*/
-
-                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
-                    });
-                });
+            CommonEnterTargetPath(tstb_CurrentPath.Text);
         }
 
         private void tsmi_BigIcon_Click(object sender, EventArgs e)
@@ -220,16 +198,194 @@ namespace HDFSTools
 
         private void tsb_Forward_Click(object sender, EventArgs e)
         {
-
+            if (forwardStack.Count > 0)
+            {
+                string target = forwardStack.Pop();
+                backwardStack.Push(target);
+                TCFEnterTargetPath(target);
+            }
         }
 
         private void tsb_Backward_Click(object sender, EventArgs e)
         {
-
+            if (backwardStack.Count > 1)
+            {
+                forwardStack.Push(backwardStack.Pop());
+                string target = backwardStack.Peek();
+                TCFEnterTargetPath(target);
+            }
         }
         #endregion
 
         #region Function
+        /// <summary>
+        /// no-try进入HDFS目标目录
+        /// </summary>
+        /// <param name="directory"></param>
+        private void CommonEnterTargetPath(string directory)
+        {
+            lv_ShowFile.Clear();
+            lv_ShowFile.AllowColumnReorder = true;
+            lv_ShowFile.Columns.Add("name", "name", 250);
+            lv_ShowFile.Columns.Add("size", "size", 100);
+            lv_ShowFile.Columns.Add("permission", "permission", 100);
+            lv_ShowFile.Columns.Add("owner", "owner", 100);
+            lv_ShowFile.Columns.Add("group", "group", 100);
+            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+
+            HDFS.client.GetDirectoryStatus(directory)
+                .ContinueWith(ds =>
+                {
+                    ds.Result.Entries.ToList()
+                    .ForEach(f =>
+                    {
+                        string permission = f.Permission;
+                        string owner = f.Owner;
+                        string group = f.Group;
+                        string size = f.Length.ToString();
+                        string replication = f.Replication.ToString();
+                        string name = f.PathSuffix;
+                        string type = f.Type;
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append(name)
+                        .Append("~>")
+                        .Append(size)
+                        .Append("~>")
+                        .Append(permission)
+                        .Append("~>")
+                        .Append(owner)
+                        .Append("~>")
+                        .Append(group)
+                        .Append("~>")
+                        .Append(replication)
+                        .Append("~>")
+                        .Append(type);
+                        /*.Append("~>")
+                        .Append(tstb_CurrentPath.Text);*/
+
+                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
+                    });
+                });
+        }
+
+        private void TCEnterTargetPath(string directory)
+        {
+            lv_ShowFile.Clear();
+            lv_ShowFile.AllowColumnReorder = true;
+
+            lv_ShowFile.Columns.Add("name", "name", 250);
+            lv_ShowFile.Columns.Add("size", "size", 100);
+            lv_ShowFile.Columns.Add("permission", "permission", 100);
+            lv_ShowFile.Columns.Add("owner", "owner", 100);
+            lv_ShowFile.Columns.Add("group", "group", 100);
+            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+
+            HDFS.client.GetDirectoryStatus(directory)
+            .ContinueWith(ds =>
+            {
+                try
+                {
+                    ds.Result.Entries.ToList()
+                        .ForEach(f =>
+                        {
+                            string permission = f.Permission;
+                            string owner = f.Owner;
+                            string group = f.Group;
+                            string size = f.Length.ToString();
+                            string replication = f.Replication.ToString();
+                            string name = f.PathSuffix;
+                            string type = f.Type;
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append(name)
+                            .Append("~>")
+                            .Append(size)
+                            .Append("~>")
+                            .Append(permission)
+                            .Append("~>")
+                            .Append(owner)
+                            .Append("~>")
+                            .Append(group)
+                            .Append("~>")
+                            .Append(replication)
+                            .Append("~>")
+                            .Append(type);
+                            /*.Append("~>")
+                            .Append(tstb_CurrentPath.Text);*/
+
+                            PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
+                        });
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.ASSIGN_PATH, directory);
+                }
+                catch
+                {
+                    MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            });
+        }
+
+        /// <summary>
+        /// try-catch-finally进入HDFS目标目录
+        /// </summary>
+        /// <param name="directory"></param>
+        private void TCFEnterTargetPath(string directory)
+        {
+            lv_ShowFile.Clear();
+            lv_ShowFile.AllowColumnReorder = true;
+
+            lv_ShowFile.Columns.Add("name", "name", 250);
+            lv_ShowFile.Columns.Add("size", "size", 100);
+            lv_ShowFile.Columns.Add("permission", "permission", 100);
+            lv_ShowFile.Columns.Add("owner", "owner", 100);
+            lv_ShowFile.Columns.Add("group", "group", 100);
+            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+
+            HDFS.client.GetDirectoryStatus(directory)
+            .ContinueWith(ds =>
+            {
+                try
+                {
+                    ds.Result.Entries.ToList()
+                        .ForEach(f =>
+                        {
+                            string permission = f.Permission;
+                            string owner = f.Owner;
+                            string group = f.Group;
+                            string size = f.Length.ToString();
+                            string replication = f.Replication.ToString();
+                            string name = f.PathSuffix;
+                            string type = f.Type;
+                            StringBuilder sb = new StringBuilder();
+                            sb.Append(name)
+                            .Append("~>")
+                            .Append(size)
+                            .Append("~>")
+                            .Append(permission)
+                            .Append("~>")
+                            .Append(owner)
+                            .Append("~>")
+                            .Append(group)
+                            .Append("~>")
+                            .Append(replication)
+                            .Append("~>")
+                            .Append(type);
+                                /*.Append("~>")
+                                .Append(tstb_CurrentPath.Text);*/
+
+                            PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
+                        });
+                }
+                catch
+                {
+                    MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.NAVIGATE_PATH_CHANGE, directory);
+                        //tstb_CurrentPath.Text = target;
+                    }
+            });
+        }
+
         /// <summary>
         /// 递归获取Tree父节点
         /// </summary>
@@ -249,17 +405,9 @@ namespace HDFSTools
         /// <param name="client"></param>
         /// <param name="tn"></param>
         /// <param name="directory"></param>
-        private void GetFirstDirectory(WebHDFSClient client, TreeNode tn, string directory)
+        private void GetFirstDirectory(TreeNode tn, string directory)
         {
-            client.GetDirectoryStatus(directory)
-                .ContinueWith(ds =>
-                {
-                    ds.Result.Directories.ToList()
-                    .ForEach(f =>
-                    {
-                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES, f.PathSuffix);
-                    });
-                });
+            this.tv_FolderList.Invoke(new Action(() => tn.Nodes.Add(directory)));
         }
 
         /// <summary>
@@ -277,8 +425,10 @@ namespace HDFSTools
         /// </summary>
         private void InitHDFS()
         {
-            Uri myUri = new Uri("http://" + host + ":" + port + "/");
-            HDFS.client = new WebHDFSClient(myUri, userName);
+            tv_FolderList.Nodes.Clear();
+
+            Uri myUri = new Uri("http://" + cls_Config.host + ":" + cls_Config.port + "/");
+            HDFS.client = new WebHDFSClient(myUri, cls_Config.userName);
             tv_FolderList.Nodes.Add("/");
             HDFS.client.GetDirectoryStatus("/")
                 .ContinueWith(ds =>
@@ -336,9 +486,9 @@ namespace HDFSTools
             string path = Application.StartupPath + @"\parameter\config.ini";
             config = cls_Config.getInstance(path);
 
-            port = config.IniReadValue("config", "port", "9870");
-            host = config.IniReadValue("config", "host", "localhost");
-            userName = config.IniReadValue("config", "userName", "user");
+            cls_Config.port = config.IniReadValue("config", "port", "9870");
+            cls_Config.host = config.IniReadValue("config", "host", "localhost");
+            cls_Config.userName = config.IniReadValue("config", "userName", "user");
         }
 
         /// <summary>
@@ -465,6 +615,15 @@ namespace HDFSTools
                     }
                     break;
 
+                case cls_Msg.NAVIGATE_PATH_CHANGE:
+                    string path = Marshal.PtrToStringAnsi(m.WParam);
+                    tstb_CurrentPath.Text = path;
+                    break;
+
+                case cls_Msg.ASSIGN_PATH:
+                    this.currentPath = tstb_CurrentPath.Text;
+                    break;
+
                 default:
                     base.WndProc(ref m);
                     break;
@@ -480,5 +639,19 @@ namespace HDFSTools
         }
         #endregion
 
+        private void tsmi_UploadFile_Click(object sender, EventArgs e)
+        {
+            /*string localPath = System.Web.HttpContext.Current.Server.MapPath("file:\\D:\\python image source.txt");
+            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(localPath);
+            webRequest.Method = "POST";
+            webRequest.AllowAutoRedirect = false;
+            HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+            string result = webResponse.Headers["Location"];*/
+        }
+
+        private void tsmi_DownloadFile_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

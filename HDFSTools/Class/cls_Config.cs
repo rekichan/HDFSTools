@@ -10,6 +10,9 @@ namespace HDFSTools
 
         #region Properties
         public static cls_Config config;
+        public static string host;
+        public static string port;
+        public static string userName;
         private object lockobject;//多线程被锁对象
         private string iniPath;
         #endregion
@@ -34,8 +37,16 @@ namespace HDFSTools
         /// </summary>
         /// <param name="path">配置文件路径</param>
         /// <returns></returns>
-        public static cls_Config getInstance(string path = "")
+        public static cls_Config getInstance(string path = "c:\\config.ini" )
         {
+            if (!System.IO.File.Exists(path))
+            {
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+                System.IO.FileStream fs = System.IO.File.Create(path);
+                fs.Close();
+            }
+                
+
             if (config == null)
                 config = new cls_Config(path);
 
