@@ -114,6 +114,8 @@ namespace HDFSTools
 
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+
+
             if (lv_ShowFile.SelectedItems.Count <= 0)
                 return;
 
