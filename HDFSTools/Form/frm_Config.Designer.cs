@@ -43,54 +43,54 @@ namespace HDFSTools
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(60, 41);
+            this.label1.Location = new System.Drawing.Point(64, 37);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(123, 20);
+            this.label1.Size = new System.Drawing.Size(100, 17);
             this.label1.TabIndex = 0;
             this.label1.Text = "NameNode主机";
             // 
             // txt_Host
             // 
-            this.txt_Host.Location = new System.Drawing.Point(64, 64);
+            this.txt_Host.Location = new System.Drawing.Point(68, 60);
             this.txt_Host.Name = "txt_Host";
-            this.txt_Host.Size = new System.Drawing.Size(182, 27);
+            this.txt_Host.Size = new System.Drawing.Size(182, 23);
             this.txt_Host.TabIndex = 1;
             // 
             // txt_Port
             // 
-            this.txt_Port.Location = new System.Drawing.Point(64, 125);
+            this.txt_Port.Location = new System.Drawing.Point(68, 121);
             this.txt_Port.Name = "txt_Port";
-            this.txt_Port.Size = new System.Drawing.Size(182, 27);
+            this.txt_Port.Size = new System.Drawing.Size(182, 23);
             this.txt_Port.TabIndex = 3;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(60, 102);
+            this.label2.Location = new System.Drawing.Point(64, 98);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 20);
+            this.label2.Size = new System.Drawing.Size(32, 17);
             this.label2.TabIndex = 2;
             this.label2.Text = "端口";
             // 
             // txt_UserName
             // 
-            this.txt_UserName.Location = new System.Drawing.Point(64, 186);
+            this.txt_UserName.Location = new System.Drawing.Point(68, 182);
             this.txt_UserName.Name = "txt_UserName";
-            this.txt_UserName.Size = new System.Drawing.Size(182, 27);
+            this.txt_UserName.Size = new System.Drawing.Size(182, 23);
             this.txt_UserName.TabIndex = 5;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(60, 163);
+            this.label3.Location = new System.Drawing.Point(64, 159);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(54, 20);
+            this.label3.Size = new System.Drawing.Size(44, 17);
             this.label3.TabIndex = 4;
             this.label3.Text = "用户名";
             // 
             // btn_Save
             // 
-            this.btn_Save.Location = new System.Drawing.Point(282, 64);
+            this.btn_Save.Location = new System.Drawing.Point(286, 60);
             this.btn_Save.Name = "btn_Save";
             this.btn_Save.Size = new System.Drawing.Size(90, 45);
             this.btn_Save.TabIndex = 6;
@@ -100,7 +100,7 @@ namespace HDFSTools
             // 
             // btn_Cancel
             // 
-            this.btn_Cancel.Location = new System.Drawing.Point(282, 168);
+            this.btn_Cancel.Location = new System.Drawing.Point(286, 164);
             this.btn_Cancel.Name = "btn_Cancel";
             this.btn_Cancel.Size = new System.Drawing.Size(90, 45);
             this.btn_Cancel.TabIndex = 7;
@@ -110,9 +110,9 @@ namespace HDFSTools
             // 
             // frm_Config
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(432, 255);
+            this.ClientSize = new System.Drawing.Size(434, 261);
             this.Controls.Add(this.btn_Cancel);
             this.Controls.Add(this.btn_Save);
             this.Controls.Add(this.txt_UserName);

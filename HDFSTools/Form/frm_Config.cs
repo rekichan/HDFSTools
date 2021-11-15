@@ -14,9 +14,6 @@ namespace HDFSTools
 
         #region Properties
         private cls_Config config;
-        private string port;
-        private string host;
-        private string userName;
         private string path = Application.StartupPath + @"\parameter\config.ini";
         #endregion
 
@@ -67,13 +64,13 @@ namespace HDFSTools
         {
             config = cls_Config.getInstance(path);
 
-            port = config.IniReadValue("config", "port", "9870");
-            host = config.IniReadValue("config", "host", "localhost");
-            userName = config.IniReadValue("config", "userName", "user");
+            cls_Config.port = config.IniReadValue("config", "port", "9870");
+            cls_Config.host = config.IniReadValue("config", "host", "localhost");
+            cls_Config.userName = config.IniReadValue("config", "userName", "user");
 
-            txt_Host.Text = host;
-            txt_Port.Text = port;
-            txt_UserName.Text = userName;
+            txt_Host.Text = cls_Config.host;
+            txt_Port.Text = cls_Config.port;
+            txt_UserName.Text = cls_Config.userName;
         }
 
         /// <summary>
@@ -81,13 +78,13 @@ namespace HDFSTools
         /// </summary>
         private void SaveConfig()
         {
-            host = txt_Host.Text;
-            port = txt_Port.Text;
-            userName = txt_UserName.Text;
+            cls_Config.host = txt_Host.Text;
+            cls_Config.port = txt_Port.Text;
+            cls_Config.userName = txt_UserName.Text;
 
-            config.IniWriteValue("config", "port", port);
-            config.IniWriteValue("config", "host", host);
-            config.IniWriteValue("config", "userName", userName);
+            config.IniWriteValue("config", "port", cls_Config.port);
+            config.IniWriteValue("config", "host", cls_Config.host);
+            config.IniWriteValue("config", "userName", cls_Config.userName);
         }
 
         /// <summary>

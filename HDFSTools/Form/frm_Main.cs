@@ -21,11 +21,6 @@ namespace HDFSTools
         private cls_Config config;
         private bool linkStatus;
         private bool initTaskFlag = true;
-        private string port;
-        private string host;
-        private string userName;
-        private string lastPath;
-        private string prevPath;
         private object lockObject;
         private ImageList smallImageList;
         private ImageList largeImageList;
@@ -70,6 +65,8 @@ namespace HDFSTools
         #region Event
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+
+
             if (lv_ShowFile.SelectedItems.Count <= 0)
                 return;
 
@@ -131,6 +128,9 @@ namespace HDFSTools
 
         private void tv_FolderList_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if (initTaskFlag)
+                return;
+
             string currentPath = tv_FolderList.SelectedNode.FullPath;
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
@@ -277,8 +277,10 @@ namespace HDFSTools
         /// </summary>
         private void InitHDFS()
         {
-            Uri myUri = new Uri("http://" + host + ":" + port + "/");
-            HDFS.client = new WebHDFSClient(myUri, userName);
+            tv_FolderList.Nodes.Clear();
+
+            Uri myUri = new Uri("http://" + cls_Config.host + ":" + cls_Config.port + "/");
+            HDFS.client = new WebHDFSClient(myUri, cls_Config.userName);
             tv_FolderList.Nodes.Add("/");
             HDFS.client.GetDirectoryStatus("/")
                 .ContinueWith(ds =>
@@ -336,9 +338,9 @@ namespace HDFSTools
             string path = Application.StartupPath + @"\parameter\config.ini";
             config = cls_Config.getInstance(path);
 
-            port = config.IniReadValue("config", "port", "9870");
-            host = config.IniReadValue("config", "host", "localhost");
-            userName = config.IniReadValue("config", "userName", "user");
+            cls_Config.port = config.IniReadValue("config", "port", "9870");
+            cls_Config.host = config.IniReadValue("config", "host", "localhost");
+            cls_Config.userName = config.IniReadValue("config", "userName", "user");
         }
 
         /// <summary>
