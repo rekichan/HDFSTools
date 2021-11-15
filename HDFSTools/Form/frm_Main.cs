@@ -11,6 +11,7 @@ using Microsoft.Hadoop.WebHDFS;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Net;
+using System.IO;
 
 namespace HDFSTools
 {
@@ -114,6 +115,8 @@ namespace HDFSTools
 
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+
+
             if (lv_ShowFile.SelectedItems.Count <= 0)
                 return;
 
@@ -651,7 +654,30 @@ namespace HDFSTools
 
         private void tsmi_DownloadFile_Click(object sender, EventArgs e)
         {
-
+            string remote = "http://wh0:9870/webhdfs/v1/FlinkStateBackend/FS/0aea18a3db295506f64e3d5a64bc9d5b/chk-16/10083863.html?op=OPEN";
+            string local = "D:\\123.txt";
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
+                request.Method = "POST";
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                long totalBytes = request.ContentLength;
+                Stream input = request.GetRequestStream();
+                Stream output = new FileStream(local, FileMode.Create);
+                byte[] bytes = new byte[1024];
+                int outputSize = input.Read(bytes, 0, bytes.Length);
+                while (outputSize > 0)
+                {
+                    output.Write(bytes, 0, outputSize);
+                    outputSize = input.Read(bytes, 0, bytes.Length);
+                }
+                output.Flush();
+                output.Close();
+                input.Close();
+            }catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
