@@ -77,6 +77,87 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void tsmi_UploadFile_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                /*string localPath = System.Web.HttpContext.Current.Server.MapPath("D:\\python image source.txt");
+                HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(localPath);
+                webRequest.Method = "POST";
+                webRequest.AllowAutoRedirect = false;
+                HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+                string result = webResponse.Headers["Location"];*/
+
+                string remote = "http://wh0:9870/webhdfs/v1/2.flow?user.name=gazeon&op=CREATE";
+                string local = "D:\\1.flow";
+                WebClient client = new WebClient();
+                client.UploadFile(remote, "PUT", local);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logger.WriteExceptionLog(ex);
+            }
+        }
+
+        private void tsmi_DownloadFile_Click(object sender, EventArgs e)
+        {
+            string remote = "http://wh0:9870/webhdfs/v1/1.flow?op=OPEN";
+
+            string local = "D:\\1.flow";
+            //Stream input = null;
+            //Stream output = null;
+            WebClient client = null;
+            FileStream fs = null;
+            try
+            {
+                client = new WebClient();
+                byte[] bs = client.DownloadData(remote);
+                fs = File.Open(local, FileMode.Create);
+                fs.Write(bs, 0, bs.Length);
+                bs = null;
+
+                /*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
+                //request.Method = "POST";
+                //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                //long totalBytes = request.ContentLength;
+                input = request.GetRequestStream();
+                output = new FileStream(local, FileMode.Create);
+                byte[] bytes = new byte[1024];
+                int outputSize = input.Read(bytes, 0, bytes.Length);
+                while (outputSize > 0)
+                {
+                    output.Write(bytes, 0, outputSize);
+                    outputSize = input.Read(bytes, 0, bytes.Length);
+                }*/
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logger.WriteExceptionLog(ex);
+            }
+            finally
+            {
+                if (fs != null)
+                {
+                    fs.Flush();
+                    fs.Close();
+                }
+
+                if (client != null)
+                    client.Dispose();
+
+                /*wc.Dispose();
+                if (output != null)
+                {
+                    output.Flush();
+                    output.Close();
+                }
+                if (input != null)
+                    input.Close();*/
+            }
+        }
+
         private void tv_FolderList_AfterExpand(object sender, TreeViewEventArgs e)
         {
             tv_FolderList.SelectedNode = e.Node;
@@ -323,7 +404,7 @@ namespace HDFSTools
                         });
                     PostMess(cls_Msg.hwndFrmMain, cls_Msg.ASSIGN_PATH, directory);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     logger.WriteExceptionLog(ex);
@@ -382,7 +463,7 @@ namespace HDFSTools
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
                         });
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     logger.WriteExceptionLog(ex);
@@ -420,16 +501,6 @@ namespace HDFSTools
         }
 
         /// <summary>
-        /// 获取二级树节点
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="directory"></param>
-        private void GetSecondDirectory(WebHDFSClient client, string directory)
-        {
-
-        }
-
-        /// <summary>
         /// 初始化HDFS
         /// </summary>
         private void InitHDFS()
@@ -453,7 +524,7 @@ namespace HDFSTools
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES, f.PathSuffix);
                         });
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         linkStatus = false;
                         PostMess(cls_Msg.hwndFrmMain, cls_Msg.MAIN_UI_DISABLE);
@@ -585,6 +656,11 @@ namespace HDFSTools
             {
                 case cls_Msg.MAIN_UI_ENABLE:
                     RefreshUIEnable(true);
+                    tstb_CurrentPath.Text = "/";
+                    this.currentPath = tstb_CurrentPath.Text;
+                    backwardStack.Push(this.currentPath);
+                    forwardStack.Clear();
+                    CommonEnterTargetPath(tstb_CurrentPath.Text);
                     break;
 
                 case cls_Msg.MAIN_UI_DISABLE:
@@ -649,85 +725,5 @@ namespace HDFSTools
         }
         #endregion
 
-        private void tsmi_UploadFile_Click(object sender, EventArgs e)
-        {
-            /*string localPath = System.Web.HttpContext.Current.Server.MapPath("D:\\python image source.txt");
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(localPath);
-            webRequest.Method = "POST";
-            webRequest.AllowAutoRedirect = false;
-            HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
-            string result = webResponse.Headers["Location"];*/
-
-            try
-            {
-                string remote = "http://wh0:9870/webhdfs/v1/2.flow?user.name=gazeon&op=CREATE";
-                string local = "D:\\1.flow";
-                WebClient client = new WebClient();
-                byte[] bytes = client.UploadFile(remote,"PUT", local);
-                string result = Encoding.UTF8.GetString(bytes);
-                MessageBox.Show(result);
-            }catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private void tsmi_DownloadFile_Click(object sender, EventArgs e)
-        {
-            string remote = "http://wh0:9870/webhdfs/v1/1.flow?op=OPEN";
-            
-            string local = "D:\\1.flow";
-            //Stream input = null;
-            //Stream output = null;
-            WebClient client = null;
-            FileStream fs = null;
-            try
-            {
-                client = new WebClient();
-                byte[] bs = client.DownloadData(remote);
-                fs = File.Open(local, FileMode.Create);
-                fs.Write(bs, 0, bs.Length);
-                bs = null;
-                
-                /*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
-                //request.Method = "POST";
-                //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                //long totalBytes = request.ContentLength;
-                input = request.GetRequestStream();
-                output = new FileStream(local, FileMode.Create);
-                byte[] bytes = new byte[1024];
-                int outputSize = input.Read(bytes, 0, bytes.Length);
-                while (outputSize > 0)
-                {
-                    output.Write(bytes, 0, outputSize);
-                    outputSize = input.Read(bytes, 0, bytes.Length);
-                }*/
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                logger.WriteExceptionLog(ex);
-            }
-            finally
-            {
-                if(fs!=null)
-                {
-                    fs.Flush();
-                    fs.Close();
-                }
-
-                if(client!=null)
-                    client.Dispose();
-
-                /*wc.Dispose();
-                if (output != null)
-                {
-                    output.Flush();
-                    output.Close();
-                }
-                if (input != null)
-                    input.Close();*/
-            }
-        }
     }
 }
