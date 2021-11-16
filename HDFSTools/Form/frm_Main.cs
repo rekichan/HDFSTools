@@ -651,34 +651,45 @@ namespace HDFSTools
 
         private void tsmi_UploadFile_Click(object sender, EventArgs e)
         {
-            /*string localPath = System.Web.HttpContext.Current.Server.MapPath("file:\\D:\\python image source.txt");
+            /*string localPath = System.Web.HttpContext.Current.Server.MapPath("D:\\python image source.txt");
             HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(localPath);
             webRequest.Method = "POST";
             webRequest.AllowAutoRedirect = false;
             HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
             string result = webResponse.Headers["Location"];*/
 
+            try
+            {
+                string remote = "http://wh0:9870/webhdfs/v1/2.flow?user.name=gazeon&op=CREATE";
+                string local = "D:\\1.flow";
+                WebClient client = new WebClient();
+                byte[] bytes = client.UploadFile(remote,"PUT", local);
+                string result = Encoding.UTF8.GetString(bytes);
+                MessageBox.Show(result);
+            }catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void tsmi_DownloadFile_Click(object sender, EventArgs e)
         {
-            //下载完成
-            /*string remote = "https://bkimg.cdn.bcebos.com/pic/7aec54e736d12f2eb938101c9192c2628535e5ddc234?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2UyNzI=,g_7,xp_5,yp_5/format,f_auto";
-            string local = "D:\\123.jpg";
-            Stream input = null;
-            Stream output = null;
-            WebClient wc = null;
+            string remote = "http://wh0:9870/webhdfs/v1/1.flow?op=OPEN";
+            
+            string local = "D:\\1.flow";
+            //Stream input = null;
+            //Stream output = null;
+            WebClient client = null;
+            FileStream fs = null;
             try
             {
-                wc = new WebClient();
-                byte[] bs = wc.DownloadData(remote);
-
-                FileStream fs = File.Open(local, FileMode.Create);
+                client = new WebClient();
+                byte[] bs = client.DownloadData(remote);
+                fs = File.Open(local, FileMode.Create);
                 fs.Write(bs, 0, bs.Length);
-                fs.Flush();
-                fs.Close();
                 bs = null;
-                *//*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
+                
+                /*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
                 //request.Method = "POST";
                 //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 //long totalBytes = request.ContentLength;
@@ -690,23 +701,33 @@ namespace HDFSTools
                 {
                     output.Write(bytes, 0, outputSize);
                     outputSize = input.Read(bytes, 0, bytes.Length);
-                }*//*
+                }*/
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                logger.WriteExceptionLog(ex);
             }
             finally
             {
-                wc.Dispose();
+                if(fs!=null)
+                {
+                    fs.Flush();
+                    fs.Close();
+                }
+
+                if(client!=null)
+                    client.Dispose();
+
+                /*wc.Dispose();
                 if (output != null)
                 {
                     output.Flush();
                     output.Close();
                 }
                 if (input != null)
-                    input.Close();
-            }*/
+                    input.Close();*/
+            }
         }
     }
 }
