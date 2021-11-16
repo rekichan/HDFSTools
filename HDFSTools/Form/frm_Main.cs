@@ -21,6 +21,7 @@ namespace HDFSTools
         #region Properties
         private cls_HDFS HDFS;
         private cls_Config config;
+        private cls_Logger logger;
         private bool linkStatus;
         private bool initTaskFlag = true;
         private string currentPath;
@@ -56,6 +57,9 @@ namespace HDFSTools
             //实例化前进后退栈对象
             forwardStack = new Stack<string>();
             backwardStack = new Stack<string>();
+
+            //实例化logger
+            logger = cls_Logger.Instance;
 
             //获取窗口句柄
             cls_Msg.hwndFrmMain = this.Handle;
@@ -319,9 +323,10 @@ namespace HDFSTools
                         });
                     PostMess(cls_Msg.hwndFrmMain, cls_Msg.ASSIGN_PATH, directory);
                 }
-                catch
+                catch(Exception ex)
                 {
                     MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    logger.WriteExceptionLog(ex);
                 }
             });
         }
@@ -377,9 +382,10 @@ namespace HDFSTools
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
                         });
                 }
-                catch
+                catch(Exception ex)
                 {
                     MessageBox.Show("跳转的路径有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    logger.WriteExceptionLog(ex);
                 }
                 finally
                 {
@@ -447,11 +453,12 @@ namespace HDFSTools
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES, f.PathSuffix);
                         });
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         linkStatus = false;
                         PostMess(cls_Msg.hwndFrmMain, cls_Msg.MAIN_UI_DISABLE);
                         MessageBox.Show("HDFS连接失败!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        logger.WriteExceptionLog(ex);
                     }
                     finally
                     {
@@ -650,6 +657,7 @@ namespace HDFSTools
             webRequest.AllowAutoRedirect = false;
             HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
             string result = webResponse.Headers["Location"];*/
+
         }
 
         private void tsmi_DownloadFile_Click(object sender, EventArgs e)
@@ -698,7 +706,7 @@ namespace HDFSTools
                 }
                 if (input != null)
                     input.Close();
-            }
-        }*/
+            }*/
+        }
     }
 }

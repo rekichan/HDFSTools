@@ -82,6 +82,7 @@
     <Compile Include="Class\cls_Msg.cs" />
     <Compile Include="Class\cls_HDFS.cs" />
     <Compile Include="Class\cls_Config.cs" />
+    <Compile Include="Class\cls_Logger.cs" />
     <Compile Include="Form\frm_Main.cs">
       <SubType>Form</SubType>
     </Compile>
