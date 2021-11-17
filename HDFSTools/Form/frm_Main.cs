@@ -24,8 +24,11 @@ namespace HDFSTools
         private cls_Logger logger;
         private bool linkStatus;
         private bool initTaskFlag = true;
+        private bool loopMonitor = true;
         private string currentPath;
         private object lockObject;
+        private System.Diagnostics.Process process;
+        private System.Diagnostics.PerformanceCounter pf;
         private ImageList smallImageList;
         private ImageList largeImageList;
         private Stack<string> forwardStack;
@@ -73,10 +76,34 @@ namespace HDFSTools
 
             //实例化ImageList并插入图片
             InitImageList();
+
+            //开启监控软件内存及CPU线程
+            process = System.Diagnostics.Process.GetCurrentProcess();
+            pf = new System.Diagnostics.PerformanceCounter("Process", "Working Set - Private", process.ProcessName);
+            System.Threading.Thread threadMonitor = new System.Threading.Thread(new System.Threading.ThreadStart(ThreadStatusMonitor));
+            threadMonitor.IsBackground = true;
+            threadMonitor.Start();
+        }
+
+        private void frm_Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            loopMonitor = false;
+            pf.Dispose();
+            process.Dispose();
         }
         #endregion
 
         #region Event
+        private void tsb_ActiveGC_Click(object sender, EventArgs e)
+        {
+            var process = System.Diagnostics.Process.GetCurrentProcess();
+            double memoryMB = process.WorkingSet64 / 1024.0 / 1024.0;
+            if (memoryMB > 120.0)
+            {
+                GC.Collect();
+            }
+        }
+
         private void tsmi_UploadFile_Click(object sender, EventArgs e)
         {
             try
@@ -291,6 +318,7 @@ namespace HDFSTools
                 string target = forwardStack.Pop();
                 backwardStack.Push(target);
                 TCFEnterTargetPath(target);
+                tstb_CurrentPath.Text = target;
             }
         }
 
@@ -301,11 +329,21 @@ namespace HDFSTools
                 forwardStack.Push(backwardStack.Pop());
                 string target = backwardStack.Peek();
                 TCFEnterTargetPath(target);
+                tstb_CurrentPath.Text = target;
             }
         }
         #endregion
 
         #region Function
+        /// <summary>
+        /// 获取系统启动经过的毫秒数
+        /// </summary>
+        /// <returns></returns>
+        private int GetTickCount()
+        {
+            return System.Environment.TickCount;
+        }
+
         /// <summary>
         /// no-try进入HDFS目标目录
         /// </summary>
@@ -356,6 +394,10 @@ namespace HDFSTools
                 });
         }
 
+        /// <summary>
+        /// try-catch进入HDFS目标目录
+        /// </summary>
+        /// <param name="directory"></param>
         private void TCEnterTargetPath(string directory)
         {
             lv_ShowFile.Clear();
@@ -645,6 +687,25 @@ namespace HDFSTools
         }
         #endregion
 
+        #region Thread
+        private void ThreadStatusMonitor()
+        {
+            int lastTick = GetTickCount();
+            while (loopMonitor)
+            {
+                double memUsed = Math.Round(pf.NextValue() / 1024.0 / 1024.0, 2);
+                int currentTick = GetTickCount();
+                if (currentTick - lastTick > 20000 && memUsed > 120)
+                {
+                    lastTick = GetTickCount();
+                    GC.Collect();
+                }
+                PostMess(cls_Msg.hwndFrmMain, cls_Msg.SHOW_MEMORY_USED, memUsed.ToString());
+                System.Threading.Thread.Sleep(1000);
+            }
+        }
+        #endregion
+
         #region Message
         /// <summary>
         /// 处理句柄消息
@@ -654,6 +715,12 @@ namespace HDFSTools
         {
             switch (m.Msg)
             {
+                case cls_Msg.SHOW_MEMORY_USED:
+                    string memory = Marshal.PtrToStringAnsi(m.WParam);
+                    tssl_Mem.Text = memory;
+                    Marshal.FreeHGlobal(m.WParam);
+                    break;
+
                 case cls_Msg.MAIN_UI_ENABLE:
                     RefreshUIEnable(true);
                     tstb_CurrentPath.Text = "/";

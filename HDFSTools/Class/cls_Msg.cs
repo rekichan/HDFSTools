@@ -20,6 +20,7 @@ namespace HDFSTools
         public const int LIST_DIRECTORIES_AND_FILES = LIST_DIRECTORIES + 1;
         public const int NAVIGATE_PATH_CHANGE = LIST_DIRECTORIES_AND_FILES +1;
         public const int ASSIGN_PATH = NAVIGATE_PATH_CHANGE + 1;
+        public const int SHOW_MEMORY_USED = ASSIGN_PATH + 1;
         #endregion
 
     }

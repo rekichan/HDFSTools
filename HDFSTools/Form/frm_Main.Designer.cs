@@ -47,6 +47,7 @@ namespace HDFSTools
             this.tssb_SysConfig = new System.Windows.Forms.ToolStripSplitButton();
             this.tsmi_ConnectConfig = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmi_Connect = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsb_ActiveGC = new System.Windows.Forms.ToolStripButton();
             this.tv_FolderList = new System.Windows.Forms.TreeView();
             this.ts_Path = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
@@ -58,12 +59,17 @@ namespace HDFSTools
             this.toolStripLabel3 = new System.Windows.Forms.ToolStripLabel();
             this.lv_ShowFile = new System.Windows.Forms.ListView();
             this.sc_Main = new System.Windows.Forms.SplitContainer();
+            this.ss_ProcessStatus = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tssl_Mem = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
             this.ts_Main.SuspendLayout();
             this.ts_Path.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sc_Main)).BeginInit();
             this.sc_Main.Panel1.SuspendLayout();
             this.sc_Main.Panel2.SuspendLayout();
             this.sc_Main.SuspendLayout();
+            this.ss_ProcessStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // ts_Main
@@ -77,10 +83,11 @@ namespace HDFSTools
             this.toolStripSeparator1,
             this.tssb_File,
             this.tssb_View,
-            this.tssb_SysConfig});
+            this.tssb_SysConfig,
+            this.tsb_ActiveGC});
             this.ts_Main.Location = new System.Drawing.Point(0, 0);
             this.ts_Main.Name = "ts_Main";
-            this.ts_Main.Size = new System.Drawing.Size(1006, 40);
+            this.ts_Main.Size = new System.Drawing.Size(1008, 40);
             this.ts_Main.TabIndex = 0;
             this.ts_Main.Text = "toolStrip1";
             // 
@@ -100,7 +107,7 @@ namespace HDFSTools
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(17, 37);
+            this.toolStripLabel1.Size = new System.Drawing.Size(16, 37);
             this.toolStripLabel1.Text = "  ";
             // 
             // tsb_Forward
@@ -129,14 +136,14 @@ namespace HDFSTools
             this.tssb_File.Image = global::HDFSTools.Properties.Resources.document;
             this.tssb_File.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tssb_File.Name = "tssb_File";
-            this.tssb_File.Size = new System.Drawing.Size(78, 37);
+            this.tssb_File.Size = new System.Drawing.Size(68, 37);
             this.tssb_File.Text = "文件";
             // 
             // tsmi_UploadFile
             // 
             this.tsmi_UploadFile.Image = global::HDFSTools.Properties.Resources.upload;
             this.tsmi_UploadFile.Name = "tsmi_UploadFile";
-            this.tsmi_UploadFile.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_UploadFile.Size = new System.Drawing.Size(128, 26);
             this.tsmi_UploadFile.Text = "上传文件";
             this.tsmi_UploadFile.Click += new System.EventHandler(this.tsmi_UploadFile_Click);
             // 
@@ -144,7 +151,7 @@ namespace HDFSTools
             // 
             this.tsmi_DownloadFile.Image = global::HDFSTools.Properties.Resources.download;
             this.tsmi_DownloadFile.Name = "tsmi_DownloadFile";
-            this.tsmi_DownloadFile.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_DownloadFile.Size = new System.Drawing.Size(128, 26);
             this.tsmi_DownloadFile.Text = "下载文件";
             this.tsmi_DownloadFile.Click += new System.EventHandler(this.tsmi_DownloadFile_Click);
             // 
@@ -159,14 +166,14 @@ namespace HDFSTools
             this.tssb_View.Image = global::HDFSTools.Properties.Resources.taillImage;
             this.tssb_View.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tssb_View.Name = "tssb_View";
-            this.tssb_View.Size = new System.Drawing.Size(78, 37);
+            this.tssb_View.Size = new System.Drawing.Size(68, 37);
             this.tssb_View.Text = "视图";
             // 
             // tsmi_BigIcon
             // 
             this.tsmi_BigIcon.Image = global::HDFSTools.Properties.Resources.bigImage;
             this.tsmi_BigIcon.Name = "tsmi_BigIcon";
-            this.tsmi_BigIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_BigIcon.Size = new System.Drawing.Size(128, 26);
             this.tsmi_BigIcon.Text = "大图标";
             this.tsmi_BigIcon.Click += new System.EventHandler(this.tsmi_BigIcon_Click);
             // 
@@ -174,7 +181,7 @@ namespace HDFSTools
             // 
             this.tsmi_SmallIcon.Image = global::HDFSTools.Properties.Resources.smallImage;
             this.tsmi_SmallIcon.Name = "tsmi_SmallIcon";
-            this.tsmi_SmallIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_SmallIcon.Size = new System.Drawing.Size(128, 26);
             this.tsmi_SmallIcon.Text = "小图标";
             this.tsmi_SmallIcon.Click += new System.EventHandler(this.tsmi_SmallIcon_Click);
             // 
@@ -182,7 +189,7 @@ namespace HDFSTools
             // 
             this.tsmi_TailIcon.Image = global::HDFSTools.Properties.Resources.taillImage;
             this.tsmi_TailIcon.Name = "tsmi_TailIcon";
-            this.tsmi_TailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_TailIcon.Size = new System.Drawing.Size(128, 26);
             this.tsmi_TailIcon.Text = "平铺";
             this.tsmi_TailIcon.Click += new System.EventHandler(this.tsmi_TailIcon_Click);
             // 
@@ -190,7 +197,7 @@ namespace HDFSTools
             // 
             this.tsmi_ListIcon.Image = global::HDFSTools.Properties.Resources.ListImage;
             this.tsmi_ListIcon.Name = "tsmi_ListIcon";
-            this.tsmi_ListIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_ListIcon.Size = new System.Drawing.Size(128, 26);
             this.tsmi_ListIcon.Text = "列表";
             this.tsmi_ListIcon.Click += new System.EventHandler(this.tsmi_ListIcon_Click);
             // 
@@ -198,7 +205,7 @@ namespace HDFSTools
             // 
             this.tsmi_DetailIcon.Image = global::HDFSTools.Properties.Resources.DetailImage;
             this.tsmi_DetailIcon.Name = "tsmi_DetailIcon";
-            this.tsmi_DetailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_DetailIcon.Size = new System.Drawing.Size(128, 26);
             this.tsmi_DetailIcon.Text = "详细信息";
             this.tsmi_DetailIcon.Click += new System.EventHandler(this.tsmi_DetailIcon_Click);
             // 
@@ -210,14 +217,14 @@ namespace HDFSTools
             this.tssb_SysConfig.Image = global::HDFSTools.Properties.Resources.setting;
             this.tssb_SysConfig.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tssb_SysConfig.Name = "tssb_SysConfig";
-            this.tssb_SysConfig.Size = new System.Drawing.Size(108, 37);
+            this.tssb_SysConfig.Size = new System.Drawing.Size(92, 37);
             this.tssb_SysConfig.Text = "系统配置";
             // 
             // tsmi_ConnectConfig
             // 
             this.tsmi_ConnectConfig.Image = global::HDFSTools.Properties.Resources.syssetting;
             this.tsmi_ConnectConfig.Name = "tsmi_ConnectConfig";
-            this.tsmi_ConnectConfig.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_ConnectConfig.Size = new System.Drawing.Size(128, 26);
             this.tsmi_ConnectConfig.Text = "连接属性";
             this.tsmi_ConnectConfig.Click += new System.EventHandler(this.tsmi_ConnectConfig_Click);
             // 
@@ -225,9 +232,18 @@ namespace HDFSTools
             // 
             this.tsmi_Connect.Image = global::HDFSTools.Properties.Resources.connect;
             this.tsmi_Connect.Name = "tsmi_Connect";
-            this.tsmi_Connect.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_Connect.Size = new System.Drawing.Size(128, 26);
             this.tsmi_Connect.Text = "连接";
             this.tsmi_Connect.Click += new System.EventHandler(this.tsmi_Connect_Click);
+            // 
+            // tsb_ActiveGC
+            // 
+            this.tsb_ActiveGC.Image = global::HDFSTools.Properties.Resources.recycle;
+            this.tsb_ActiveGC.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsb_ActiveGC.Name = "tsb_ActiveGC";
+            this.tsb_ActiveGC.Size = new System.Drawing.Size(73, 37);
+            this.tsb_ActiveGC.Text = "手动GC";
+            this.tsb_ActiveGC.Click += new System.EventHandler(this.tsb_ActiveGC_Click);
             // 
             // tv_FolderList
             // 
@@ -236,7 +252,7 @@ namespace HDFSTools
             this.tv_FolderList.Name = "tv_FolderList";
             this.tv_FolderList.PathSeparator = "/";
             this.tv_FolderList.ShowLines = false;
-            this.tv_FolderList.Size = new System.Drawing.Size(249, 653);
+            this.tv_FolderList.Size = new System.Drawing.Size(249, 662);
             this.tv_FolderList.TabIndex = 1;
             this.tv_FolderList.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.tv_FolderList_AfterCollapse);
             this.tv_FolderList.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_FolderList_AfterExpand);
@@ -255,14 +271,14 @@ namespace HDFSTools
             this.toolStripLabel3});
             this.ts_Path.Location = new System.Drawing.Point(0, 40);
             this.ts_Path.Name = "ts_Path";
-            this.ts_Path.Size = new System.Drawing.Size(1006, 27);
+            this.ts_Path.Size = new System.Drawing.Size(1008, 27);
             this.ts_Path.TabIndex = 2;
             this.ts_Path.Text = "toolStrip2";
             // 
             // toolStripLabel2
             // 
             this.toolStripLabel2.Name = "toolStripLabel2";
-            this.toolStripLabel2.Size = new System.Drawing.Size(54, 24);
+            this.toolStripLabel2.Size = new System.Drawing.Size(44, 24);
             this.toolStripLabel2.Text = "地址：";
             // 
             // tstb_CurrentPath
@@ -279,7 +295,7 @@ namespace HDFSTools
             this.tsb_Enter.Image = global::HDFSTools.Properties.Resources.enter;
             this.tsb_Enter.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsb_Enter.Name = "tsb_Enter";
-            this.tsb_Enter.Size = new System.Drawing.Size(29, 24);
+            this.tsb_Enter.Size = new System.Drawing.Size(24, 24);
             this.tsb_Enter.Text = "跳转";
             this.tsb_Enter.Click += new System.EventHandler(this.tsb_Enter_Click);
             // 
@@ -290,7 +306,7 @@ namespace HDFSTools
             this.tsb_Refresh.Image = global::HDFSTools.Properties.Resources.refresh;
             this.tsb_Refresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsb_Refresh.Name = "tsb_Refresh";
-            this.tsb_Refresh.Size = new System.Drawing.Size(29, 24);
+            this.tsb_Refresh.Size = new System.Drawing.Size(24, 24);
             this.tsb_Refresh.Text = "刷新";
             this.tsb_Refresh.Click += new System.EventHandler(this.tsb_Refresh_Click);
             // 
@@ -302,7 +318,7 @@ namespace HDFSTools
             this.tsb_Search.Image = global::HDFSTools.Properties.Resources.search;
             this.tsb_Search.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsb_Search.Name = "tsb_Search";
-            this.tsb_Search.Size = new System.Drawing.Size(29, 24);
+            this.tsb_Search.Size = new System.Drawing.Size(24, 24);
             this.tsb_Search.Text = "搜索";
             this.tsb_Search.Visible = false;
             // 
@@ -312,14 +328,14 @@ namespace HDFSTools
             this.tstb_Search.Enabled = false;
             this.tstb_Search.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.tstb_Search.Name = "tstb_Search";
-            this.tstb_Search.Size = new System.Drawing.Size(200, 24);
+            this.tstb_Search.Size = new System.Drawing.Size(200, 21);
             this.tstb_Search.Visible = false;
             // 
             // toolStripLabel3
             // 
             this.toolStripLabel3.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripLabel3.Name = "toolStripLabel3";
-            this.toolStripLabel3.Size = new System.Drawing.Size(54, 20);
+            this.toolStripLabel3.Size = new System.Drawing.Size(44, 17);
             this.toolStripLabel3.Text = "搜索：";
             this.toolStripLabel3.Visible = false;
             // 
@@ -329,7 +345,7 @@ namespace HDFSTools
             this.lv_ShowFile.HideSelection = false;
             this.lv_ShowFile.Location = new System.Drawing.Point(0, 0);
             this.lv_ShowFile.Name = "lv_ShowFile";
-            this.lv_ShowFile.Size = new System.Drawing.Size(753, 653);
+            this.lv_ShowFile.Size = new System.Drawing.Size(755, 662);
             this.lv_ShowFile.TabIndex = 3;
             this.lv_ShowFile.UseCompatibleStateImageBehavior = false;
             this.lv_ShowFile.View = System.Windows.Forms.View.Details;
@@ -337,8 +353,8 @@ namespace HDFSTools
             // 
             // sc_Main
             // 
-            this.sc_Main.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.sc_Main.Location = new System.Drawing.Point(0, 70);
+            this.sc_Main.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sc_Main.Location = new System.Drawing.Point(0, 67);
             this.sc_Main.Name = "sc_Main";
             // 
             // sc_Main.Panel1
@@ -348,15 +364,46 @@ namespace HDFSTools
             // sc_Main.Panel2
             // 
             this.sc_Main.Panel2.Controls.Add(this.lv_ShowFile);
-            this.sc_Main.Size = new System.Drawing.Size(1006, 653);
+            this.sc_Main.Size = new System.Drawing.Size(1008, 662);
             this.sc_Main.SplitterDistance = 249;
             this.sc_Main.TabIndex = 4;
             // 
+            // ss_ProcessStatus
+            // 
+            this.ss_ProcessStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel4,
+            this.tssl_Mem,
+            this.toolStripStatusLabel6});
+            this.ss_ProcessStatus.Location = new System.Drawing.Point(0, 707);
+            this.ss_ProcessStatus.Name = "ss_ProcessStatus";
+            this.ss_ProcessStatus.Size = new System.Drawing.Size(1008, 22);
+            this.ss_ProcessStatus.TabIndex = 5;
+            this.ss_ProcessStatus.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(116, 17);
+            this.toolStripStatusLabel4.Text = "当前程序内存使用：";
+            // 
+            // tssl_Mem
+            // 
+            this.tssl_Mem.Name = "tssl_Mem";
+            this.tssl_Mem.Size = new System.Drawing.Size(20, 17);
+            this.tssl_Mem.Text = "-1";
+            // 
+            // toolStripStatusLabel6
+            // 
+            this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
+            this.toolStripStatusLabel6.Size = new System.Drawing.Size(28, 17);
+            this.toolStripStatusLabel6.Text = "MB";
+            // 
             // frm_Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1006, 723);
+            this.ClientSize = new System.Drawing.Size(1008, 729);
+            this.Controls.Add(this.ss_ProcessStatus);
             this.Controls.Add(this.sc_Main);
             this.Controls.Add(this.ts_Path);
             this.Controls.Add(this.ts_Main);
@@ -369,6 +416,7 @@ namespace HDFSTools
             this.Name = "frm_Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "HDFS Tools";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_Main_FormClosing);
             this.Load += new System.EventHandler(this.frm_Main_Load);
             this.ts_Main.ResumeLayout(false);
             this.ts_Main.PerformLayout();
@@ -378,6 +426,8 @@ namespace HDFSTools
             this.sc_Main.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.sc_Main)).EndInit();
             this.sc_Main.ResumeLayout(false);
+            this.ss_ProcessStatus.ResumeLayout(false);
+            this.ss_ProcessStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -413,6 +463,11 @@ namespace HDFSTools
         private System.Windows.Forms.ToolStripMenuItem tsmi_DownloadFile;
         private System.Windows.Forms.ToolStripButton tsb_Enter;
         private System.Windows.Forms.SplitContainer sc_Main;
+        private System.Windows.Forms.ToolStripButton tsb_ActiveGC;
+        private System.Windows.Forms.StatusStrip ss_ProcessStatus;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel tssl_Mem;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
     }
 }
 

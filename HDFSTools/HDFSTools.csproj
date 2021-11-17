@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Resource\recycle.ico" />
     <None Include="Resource\newfile.ico" />
     <None Include="Resource\FileFolder.png" />
     <None Include="Resource\folder.ico" />
