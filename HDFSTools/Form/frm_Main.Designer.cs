@@ -143,7 +143,7 @@ namespace HDFSTools
             // 
             this.tsmi_UploadFile.Image = global::HDFSTools.Properties.Resources.upload;
             this.tsmi_UploadFile.Name = "tsmi_UploadFile";
-            this.tsmi_UploadFile.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_UploadFile.Size = new System.Drawing.Size(224, 26);
             this.tsmi_UploadFile.Text = "上传文件";
             this.tsmi_UploadFile.Click += new System.EventHandler(this.tsmi_UploadFile_Click);
             // 
@@ -151,7 +151,7 @@ namespace HDFSTools
             // 
             this.tsmi_DownloadFile.Image = global::HDFSTools.Properties.Resources.download;
             this.tsmi_DownloadFile.Name = "tsmi_DownloadFile";
-            this.tsmi_DownloadFile.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_DownloadFile.Size = new System.Drawing.Size(224, 26);
             this.tsmi_DownloadFile.Text = "下载文件";
             this.tsmi_DownloadFile.Click += new System.EventHandler(this.tsmi_DownloadFile_Click);
             // 
@@ -174,7 +174,7 @@ namespace HDFSTools
             // 
             this.tsmi_BigIcon.Image = global::HDFSTools.Properties.Resources.bigImage;
             this.tsmi_BigIcon.Name = "tsmi_BigIcon";
-            this.tsmi_BigIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_BigIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_BigIcon.Text = "大图标";
             this.tsmi_BigIcon.Click += new System.EventHandler(this.tsmi_BigIcon_Click);
             // 
@@ -182,7 +182,7 @@ namespace HDFSTools
             // 
             this.tsmi_SmallIcon.Image = global::HDFSTools.Properties.Resources.smallImage;
             this.tsmi_SmallIcon.Name = "tsmi_SmallIcon";
-            this.tsmi_SmallIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_SmallIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_SmallIcon.Text = "小图标";
             this.tsmi_SmallIcon.Click += new System.EventHandler(this.tsmi_SmallIcon_Click);
             // 
@@ -190,7 +190,7 @@ namespace HDFSTools
             // 
             this.tsmi_TailIcon.Image = global::HDFSTools.Properties.Resources.taillImage;
             this.tsmi_TailIcon.Name = "tsmi_TailIcon";
-            this.tsmi_TailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_TailIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_TailIcon.Text = "平铺";
             this.tsmi_TailIcon.Click += new System.EventHandler(this.tsmi_TailIcon_Click);
             // 
@@ -198,7 +198,7 @@ namespace HDFSTools
             // 
             this.tsmi_ListIcon.Image = global::HDFSTools.Properties.Resources.ListImage;
             this.tsmi_ListIcon.Name = "tsmi_ListIcon";
-            this.tsmi_ListIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_ListIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_ListIcon.Text = "列表";
             this.tsmi_ListIcon.Click += new System.EventHandler(this.tsmi_ListIcon_Click);
             // 
@@ -206,7 +206,7 @@ namespace HDFSTools
             // 
             this.tsmi_DetailIcon.Image = global::HDFSTools.Properties.Resources.DetailImage;
             this.tsmi_DetailIcon.Name = "tsmi_DetailIcon";
-            this.tsmi_DetailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_DetailIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_DetailIcon.Text = "详细信息";
             this.tsmi_DetailIcon.Click += new System.EventHandler(this.tsmi_DetailIcon_Click);
             // 
