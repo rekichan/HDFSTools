@@ -168,6 +168,7 @@ namespace HDFSTools
             this.tssb_View.Name = "tssb_View";
             this.tssb_View.Size = new System.Drawing.Size(68, 37);
             this.tssb_View.Text = "视图";
+            this.tssb_View.Visible = false;
             // 
             // tsmi_BigIcon
             // 
