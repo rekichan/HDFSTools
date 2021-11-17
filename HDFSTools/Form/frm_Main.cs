@@ -25,6 +25,8 @@ namespace HDFSTools
         private bool linkStatus;
         private bool initTaskFlag = true;
         private bool loopMonitor = true;
+        private List<ListViewItem> itemSource;
+        private List<ListViewItem> cacheSource;
         private string currentPath;
         private object lockObject;
         private System.Diagnostics.Process process;
@@ -34,6 +36,7 @@ namespace HDFSTools
         private Stack<string> forwardStack;
         private Stack<string> backwardStack;
         private delegate void showDirectory(TreeNode subTN, string path);
+        private delegate void showDirectoryAndFile(string path);
         #endregion
 
         #region API
@@ -94,6 +97,17 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void lv_ShowFile_RetrieveVirtualItem(object sender,RetrieveVirtualItemEventArgs e)
+        {
+            lock (lockObject)
+            {
+                if (cacheSource == null || cacheSource.Count == 0)
+                    return;
+
+                e.Item = cacheSource[e.ItemIndex];
+            }
+        }
+
         private void tsb_ActiveGC_Click(object sender, EventArgs e)
         {
             var process = System.Diagnostics.Process.GetCurrentProcess();
@@ -227,42 +241,42 @@ namespace HDFSTools
 
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-
-
-            if (lv_ShowFile.SelectedItems.Count <= 0)
+            if (lv_ShowFile.SelectedIndices.Count <= 0)
                 return;
 
             string currentPath = tstb_CurrentPath.Text;
             if (!currentPath.EndsWith("/"))
                 currentPath += "/";
-            string info = lv_ShowFile.SelectedItems[0].Tag.ToString();
+            string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
             string[] infos = Regex.Split(info, "~>");
             if ("FILE".Equals(infos[6]))
                 return;
-
+            lv_ShowFile.SelectedIndices.Clear();
             string newPath = currentPath + infos[0] + "/";
             tstb_CurrentPath.Text = currentPath + infos[0];
             this.currentPath = tstb_CurrentPath.Text;
             backwardStack.Push(this.currentPath);
             forwardStack.Clear();
 
-            lv_ShowFile.Clear();
+            showDirectoryAndFile showFile = new showDirectoryAndFile(InvokeEnterTargetPath);
+            showFile.BeginInvoke(newPath, null, null);
+
+            /*lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
             lv_ShowFile.Columns.Add("permission", "permission", 100);
             lv_ShowFile.Columns.Add("owner", "owner", 100);
             lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);*/
 
-            CommonEnterTargetPath(newPath);
+            //CommonEnterTargetPath(newPath);
         }
 
         private void tv_FolderList_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (initTaskFlag)
                 return;
-
             string currentPath = tv_FolderList.SelectedNode.FullPath;
             tstb_CurrentPath.Text = currentPath;
             this.currentPath = tstb_CurrentPath.Text;
@@ -274,26 +288,31 @@ namespace HDFSTools
 
         private void tsmi_BigIcon_Click(object sender, EventArgs e)
         {
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.LargeIcon;
         }
 
         private void tsmi_SmallIcon_Click(object sender, EventArgs e)
         {
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.SmallIcon;
         }
 
         private void tsmi_TailIcon_Click(object sender, EventArgs e)
         {
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.Tile;
         }
 
         private void tsmi_ListIcon_Click(object sender, EventArgs e)
         {
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.List;
         }
 
         private void tsmi_DetailIcon_Click(object sender, EventArgs e)
         {
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.Details;
         }
 
@@ -344,12 +363,70 @@ namespace HDFSTools
             return System.Environment.TickCount;
         }
 
+        private void InvokeEnterTargetPath(string directory)
+        {
+            this.lv_ShowFile.Invoke(new Action(() => {
+                itemSource.Clear();
+                try
+                {
+                    lv_ShowFile.VirtualMode = false;
+                }
+                catch { }
+                lv_ShowFile.Clear();
+                lv_ShowFile.AllowColumnReorder = true;
+                lv_ShowFile.Columns.Add("name", "name", 250);
+                lv_ShowFile.Columns.Add("size", "size", 100);
+                lv_ShowFile.Columns.Add("permission", "permission", 100);
+                lv_ShowFile.Columns.Add("owner", "owner", 100);
+                lv_ShowFile.Columns.Add("group", "group", 100);
+                lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+            }));
+
+            HDFS.client.GetDirectoryStatus(directory)
+                .ContinueWith(ds =>
+                {
+                    ds.Result.Entries.ToList()
+                    .ForEach(f =>
+                    {
+                        string permission = f.Permission;
+                        string owner = f.Owner;
+                        string group = f.Group;
+                        string size = f.Length.ToString();
+                        string replication = f.Replication.ToString();
+                        string name = f.PathSuffix;
+                        string type = f.Type;
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append(name)
+                        .Append("~>")
+                        .Append(size)
+                        .Append("~>")
+                        .Append(permission)
+                        .Append("~>")
+                        .Append(owner)
+                        .Append("~>")
+                        .Append(group)
+                        .Append("~>")
+                        .Append(replication)
+                        .Append("~>")
+                        .Append(type);
+                        /*.Append("~>")
+                        .Append(tstb_CurrentPath.Text);*/
+
+                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
+                    });
+                    System.Threading.Thread.Sleep(50);
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.SHOW_LIST_VIEW_ITEMS);
+                });
+        }
+
         /// <summary>
         /// no-try进入HDFS目标目录
         /// </summary>
         /// <param name="directory"></param>
         private void CommonEnterTargetPath(string directory)
         {
+            itemSource.Clear();
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
             lv_ShowFile.Columns.Add("name", "name", 250);
@@ -391,6 +468,8 @@ namespace HDFSTools
 
                         PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
                     });
+                    System.Threading.Thread.Sleep(50);
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.SHOW_LIST_VIEW_ITEMS);
                 });
         }
 
@@ -400,9 +479,10 @@ namespace HDFSTools
         /// <param name="directory"></param>
         private void TCEnterTargetPath(string directory)
         {
+            itemSource.Clear();
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
-
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
             lv_ShowFile.Columns.Add("permission", "permission", 100);
@@ -444,6 +524,8 @@ namespace HDFSTools
 
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
                         });
+                    System.Threading.Thread.Sleep(50);
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.SHOW_LIST_VIEW_ITEMS);
                     PostMess(cls_Msg.hwndFrmMain, cls_Msg.ASSIGN_PATH, directory);
                 }
                 catch (Exception ex)
@@ -460,9 +542,10 @@ namespace HDFSTools
         /// <param name="directory"></param>
         private void TCFEnterTargetPath(string directory)
         {
+            itemSource.Clear();
+            lv_ShowFile.VirtualMode = false;
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
-
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
             lv_ShowFile.Columns.Add("permission", "permission", 100);
@@ -504,6 +587,8 @@ namespace HDFSTools
 
                             PostMess(cls_Msg.hwndFrmMain, cls_Msg.LIST_DIRECTORIES_AND_FILES, sb.ToString());
                         });
+                    System.Threading.Thread.Sleep(50);
+                    PostMess(cls_Msg.hwndFrmMain, cls_Msg.SHOW_LIST_VIEW_ITEMS);
                 }
                 catch (Exception ex)
                 {
@@ -547,6 +632,9 @@ namespace HDFSTools
         /// </summary>
         private void InitHDFS()
         {
+            itemSource = new List<ListViewItem>();
+            cacheSource = new List<ListViewItem>();
+            lv_ShowFile.VirtualMode = true;
             tv_FolderList.Nodes.Clear();
 
             Uri myUri = new Uri("http://" + cls_Config.host + ":" + cls_Config.port + "/");
@@ -715,6 +803,19 @@ namespace HDFSTools
         {
             switch (m.Msg)
             {
+                case cls_Msg.SHOW_LIST_VIEW_ITEMS:
+                    lock (lockObject)
+                    {
+                        cacheSource = itemSource;
+                        if (itemSource.Count != 0)
+                        {
+                            lv_ShowFile.VirtualMode = true;
+                            lv_ShowFile.VirtualListSize = cacheSource.Count;
+                            lv_ShowFile.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(lv_ShowFile_RetrieveVirtualItem);
+                        }
+                    }
+                    break;
+
                 case cls_Msg.SHOW_MEMORY_USED:
                     string memory = Marshal.PtrToStringAnsi(m.WParam);
                     tssl_Mem.Text = memory;
@@ -763,7 +864,8 @@ namespace HDFSTools
                         item.SubItems.Add(infos[3]);
                         item.SubItems.Add(infos[4]);
                         item.SubItems.Add(infos[5]);
-                        lv_ShowFile.Items.Add(item);
+                        itemSource.Add(item);
+                        //lv_ShowFile.Items.Add(item);
                         Marshal.FreeHGlobal(m.WParam);
                     }
                     break;
