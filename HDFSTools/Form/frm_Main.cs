@@ -291,6 +291,7 @@ namespace HDFSTools
                 string target = forwardStack.Pop();
                 backwardStack.Push(target);
                 TCFEnterTargetPath(target);
+                tstb_CurrentPath.Text = target;
             }
         }
 
@@ -301,6 +302,7 @@ namespace HDFSTools
                 forwardStack.Push(backwardStack.Pop());
                 string target = backwardStack.Peek();
                 TCFEnterTargetPath(target);
+                tstb_CurrentPath.Text = target;
             }
         }
         #endregion
