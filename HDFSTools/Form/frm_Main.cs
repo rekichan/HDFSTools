@@ -624,7 +624,11 @@ namespace HDFSTools
         /// <param name="directory"></param>
         private void GetFirstDirectory(TreeNode tn, string directory)
         {
-            this.tv_FolderList.Invoke(new Action(() => tn.Nodes.Add(directory)));
+            this.tv_FolderList.Invoke(new Action(() => {
+                tv_FolderList.BeginUpdate();
+                tn.Nodes.Add(directory);
+                tv_FolderList.EndUpdate();
+                }));
         }
 
         /// <summary>
@@ -807,11 +811,17 @@ namespace HDFSTools
                     lock (lockObject)
                     {
                         cacheSource = itemSource;
-                        if (itemSource.Count != 0)
+                        try
                         {
-                            lv_ShowFile.VirtualMode = true;
-                            lv_ShowFile.VirtualListSize = cacheSource.Count;
-                            lv_ShowFile.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(lv_ShowFile_RetrieveVirtualItem);
+                            if (itemSource.Count != 0)
+                            {
+                                lv_ShowFile.VirtualMode = true;
+                                lv_ShowFile.VirtualListSize = cacheSource.Count;
+                                lv_ShowFile.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(lv_ShowFile_RetrieveVirtualItem);
+                            }
+                        }catch(Exception ex)
+                        {
+                            logger.WriteExceptionLog(ex);
                         }
                     }
                     break;
@@ -839,10 +849,12 @@ namespace HDFSTools
                     lock (lockObject)
                     {
                         string text = Marshal.PtrToStringAnsi(m.WParam);
+                        tv_FolderList.BeginUpdate();
                         TreeNode tn = new TreeNode(text);
                         tn.ImageIndex = smallImageList.Images.IndexOfKey("folder");
                         tn.SelectedImageIndex = smallImageList.Images.IndexOfKey("folder");
                         tv_FolderList.Nodes[0].Nodes.Add(tn);
+                        tv_FolderList.EndUpdate();
                         Marshal.FreeHGlobal(m.WParam);
                     }
                     break;
