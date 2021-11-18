@@ -227,6 +227,11 @@ namespace HDFSTools
         private void tv_FolderList_AfterCollapse(object sender, TreeViewEventArgs e)
         {
             e.Node.Collapse(false);
+            int cnt = e.Node.Nodes.Count;
+            for(int i = 0; i < cnt; i++)
+            {
+                e.Node.Nodes[i].Nodes.Clear();
+            }
         }
 
         private void tsb_Refresh_Click(object sender, EventArgs e)
