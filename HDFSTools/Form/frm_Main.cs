@@ -97,7 +97,7 @@ namespace HDFSTools
         #endregion
 
         #region Event
-        private void lv_ShowFile_RetrieveVirtualItem(object sender,RetrieveVirtualItemEventArgs e)
+        private void lv_ShowFile_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             lock (lockObject)
             {
@@ -228,7 +228,7 @@ namespace HDFSTools
         {
             e.Node.Collapse(false);
             int cnt = e.Node.Nodes.Count;
-            for(int i = 0; i < cnt; i++)
+            for (int i = 0; i < cnt; i++)
             {
                 e.Node.Nodes[i].Nodes.Clear();
             }
@@ -368,9 +368,14 @@ namespace HDFSTools
             return System.Environment.TickCount;
         }
 
+        /// <summary>
+        /// 虚拟模式进入HDFS目录
+        /// </summary>
+        /// <param name="directory">路径</param>
         private void InvokeEnterTargetPath(string directory)
         {
-            this.lv_ShowFile.Invoke(new Action(() => {
+            this.lv_ShowFile.Invoke(new Action(() =>
+            {
                 itemSource.Clear();
                 try
                 {
@@ -381,10 +386,10 @@ namespace HDFSTools
                 lv_ShowFile.AllowColumnReorder = true;
                 lv_ShowFile.Columns.Add("name", "name", 250);
                 lv_ShowFile.Columns.Add("size", "size", 100);
-                lv_ShowFile.Columns.Add("permission", "permission", 100);
-                lv_ShowFile.Columns.Add("owner", "owner", 100);
-                lv_ShowFile.Columns.Add("group", "group", 100);
-                lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+                lv_ShowFile.Columns.Add("permission", "permission", 50);
+                lv_ShowFile.Columns.Add("owner", "owner", 50);
+                lv_ShowFile.Columns.Add("group", "group", 50);
+                lv_ShowFile.Columns.Add("modifiedtime", "modifiedtime", lv_ShowFile.Width - 650);
             }));
 
             HDFS.client.GetDirectoryStatus(directory)
@@ -393,11 +398,17 @@ namespace HDFSTools
                     ds.Result.Entries.ToList()
                     .ForEach(f =>
                     {
+                        string lastModifiedTime = "";
+                        if (f.Info != null)
+                        {
+                            long lastModified = Convert.ToInt64(f.Info.GetValue("modificationTime").ToString());
+                            lastModifiedTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1)).AddMilliseconds(lastModified).ToLongDateString();
+                        }
                         string permission = f.Permission;
                         string owner = f.Owner;
                         string group = f.Group;
                         string size = f.Length.ToString();
-                        string replication = f.Replication.ToString();
+                        //string replication = f.Replication.ToString();
                         string name = f.PathSuffix;
                         string type = f.Type;
                         StringBuilder sb = new StringBuilder();
@@ -411,7 +422,7 @@ namespace HDFSTools
                         .Append("~>")
                         .Append(group)
                         .Append("~>")
-                        .Append(replication)
+                        .Append(lastModifiedTime)
                         .Append("~>")
                         .Append(type);
                         /*.Append("~>")
@@ -436,10 +447,10 @@ namespace HDFSTools
             lv_ShowFile.AllowColumnReorder = true;
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
-            lv_ShowFile.Columns.Add("owner", "owner", 100);
-            lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+            lv_ShowFile.Columns.Add("permission", "permission", 50);
+            lv_ShowFile.Columns.Add("owner", "owner", 50);
+            lv_ShowFile.Columns.Add("group", "group", 50);
+            lv_ShowFile.Columns.Add("modifiedtime", "modifiedtime", lv_ShowFile.Width - 650);
 
             HDFS.client.GetDirectoryStatus(directory)
                 .ContinueWith(ds =>
@@ -447,11 +458,17 @@ namespace HDFSTools
                     ds.Result.Entries.ToList()
                     .ForEach(f =>
                     {
+                        string lastModifiedTime = "";
+                        if (f.Info != null)
+                        {
+                            long lastModified = Convert.ToInt64(f.Info.GetValue("modificationTime").ToString());
+                            lastModifiedTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1)).AddMilliseconds(lastModified).ToLongDateString();
+                        }
                         string permission = f.Permission;
                         string owner = f.Owner;
                         string group = f.Group;
                         string size = f.Length.ToString();
-                        string replication = f.Replication.ToString();
+                        //string replication = f.Replication.ToString();
                         string name = f.PathSuffix;
                         string type = f.Type;
                         StringBuilder sb = new StringBuilder();
@@ -465,7 +482,7 @@ namespace HDFSTools
                         .Append("~>")
                         .Append(group)
                         .Append("~>")
-                        .Append(replication)
+                        .Append(lastModifiedTime)
                         .Append("~>")
                         .Append(type);
                         /*.Append("~>")
@@ -490,10 +507,10 @@ namespace HDFSTools
             lv_ShowFile.AllowColumnReorder = true;
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
-            lv_ShowFile.Columns.Add("owner", "owner", 100);
-            lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+            lv_ShowFile.Columns.Add("permission", "permission", 50);
+            lv_ShowFile.Columns.Add("owner", "owner", 50);
+            lv_ShowFile.Columns.Add("group", "group", 50);
+            lv_ShowFile.Columns.Add("modifiedtime", "modifiedtime", lv_ShowFile.Width - 650);
 
             HDFS.client.GetDirectoryStatus(directory)
             .ContinueWith(ds =>
@@ -503,11 +520,17 @@ namespace HDFSTools
                     ds.Result.Entries.ToList()
                         .ForEach(f =>
                         {
+                            string lastModifiedTime = "";
+                            if (f.Info != null)
+                            {
+                                long lastModified = Convert.ToInt64(f.Info.GetValue("modificationTime").ToString());
+                                lastModifiedTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1)).AddMilliseconds(lastModified).ToLongDateString();
+                            }
                             string permission = f.Permission;
                             string owner = f.Owner;
                             string group = f.Group;
                             string size = f.Length.ToString();
-                            string replication = f.Replication.ToString();
+                            //string replication = f.Replication.ToString();
                             string name = f.PathSuffix;
                             string type = f.Type;
                             StringBuilder sb = new StringBuilder();
@@ -521,7 +544,7 @@ namespace HDFSTools
                             .Append("~>")
                             .Append(group)
                             .Append("~>")
-                            .Append(replication)
+                            .Append(lastModifiedTime)
                             .Append("~>")
                             .Append(type);
                             /*.Append("~>")
@@ -553,10 +576,10 @@ namespace HDFSTools
             lv_ShowFile.AllowColumnReorder = true;
             lv_ShowFile.Columns.Add("name", "name", 250);
             lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
-            lv_ShowFile.Columns.Add("owner", "owner", 100);
-            lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", lv_ShowFile.Width - 650);
+            lv_ShowFile.Columns.Add("permission", "permission", 50);
+            lv_ShowFile.Columns.Add("owner", "owner", 50);
+            lv_ShowFile.Columns.Add("group", "group", 50);
+            lv_ShowFile.Columns.Add("modifiedtime", "modifiedtime", lv_ShowFile.Width - 650);
 
             HDFS.client.GetDirectoryStatus(directory)
             .ContinueWith(ds =>
@@ -566,11 +589,17 @@ namespace HDFSTools
                     ds.Result.Entries.ToList()
                         .ForEach(f =>
                         {
+                            string lastModifiedTime = "";
+                            if (f.Info != null)
+                            {
+                                long lastModified = Convert.ToInt64(f.Info.GetValue("modificationTime").ToString());
+                                lastModifiedTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1)).AddMilliseconds(lastModified).ToLongDateString();
+                            }
                             string permission = f.Permission;
                             string owner = f.Owner;
                             string group = f.Group;
                             string size = f.Length.ToString();
-                            string replication = f.Replication.ToString();
+                            //string replication = f.Replication.ToString();
                             string name = f.PathSuffix;
                             string type = f.Type;
                             StringBuilder sb = new StringBuilder();
@@ -584,7 +613,7 @@ namespace HDFSTools
                             .Append("~>")
                             .Append(group)
                             .Append("~>")
-                            .Append(replication)
+                            .Append(lastModifiedTime)
                             .Append("~>")
                             .Append(type);
                             /*.Append("~>")
@@ -629,9 +658,10 @@ namespace HDFSTools
         /// <param name="directory"></param>
         private void GetFirstDirectory(TreeNode tn, string directory)
         {
-            this.tv_FolderList.Invoke(new Action(() => {
+            this.tv_FolderList.Invoke(new Action(() =>
+            {
                 tn.Nodes.Add(directory);
-                }));
+            }));
         }
 
         /// <summary>
@@ -647,6 +677,7 @@ namespace HDFSTools
             Uri myUri = new Uri("http://" + cls_Config.host + ":" + cls_Config.port + "/");
             HDFS.client = new WebHDFSClient(myUri, cls_Config.userName);
             tv_FolderList.Nodes.Add("/");
+            tv_FolderList.BeginUpdate();
             HDFS.client.GetDirectoryStatus("/")
                 .ContinueWith(ds =>
                 {
@@ -671,6 +702,7 @@ namespace HDFSTools
                     finally
                     {
                         initTaskFlag = false;
+                        PostMess(cls_Msg.hwndFrmMain, cls_Msg.TREEVIEW_ENDUPDATE);
                     }
                 });
         }
@@ -810,6 +842,10 @@ namespace HDFSTools
         {
             switch (m.Msg)
             {
+                case cls_Msg.TREEVIEW_ENDUPDATE:
+                    tv_FolderList.EndUpdate();
+                    break;
+
                 case cls_Msg.SHOW_LIST_VIEW_ITEMS:
                     lock (lockObject)
                     {
@@ -822,7 +858,8 @@ namespace HDFSTools
                                 lv_ShowFile.VirtualListSize = cacheSource.Count;
                                 lv_ShowFile.RetrieveVirtualItem += new RetrieveVirtualItemEventHandler(lv_ShowFile_RetrieveVirtualItem);
                             }
-                        }catch(Exception ex)
+                        }
+                        catch (Exception ex)
                         {
                             logger.WriteExceptionLog(ex);
                         }

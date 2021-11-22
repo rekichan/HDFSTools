@@ -22,6 +22,7 @@ namespace HDFSTools
         public const int ASSIGN_PATH = NAVIGATE_PATH_CHANGE + 1;
         public const int SHOW_MEMORY_USED = ASSIGN_PATH + 1;
         public const int SHOW_LIST_VIEW_ITEMS = SHOW_MEMORY_USED + 1;
+        public const int TREEVIEW_ENDUPDATE = SHOW_LIST_VIEW_ITEMS + 1;
         #endregion
 
     }
