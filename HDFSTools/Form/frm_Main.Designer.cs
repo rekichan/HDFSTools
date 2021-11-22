@@ -253,7 +253,7 @@ namespace HDFSTools
             this.tv_FolderList.Name = "tv_FolderList";
             this.tv_FolderList.PathSeparator = "/";
             this.tv_FolderList.ShowLines = false;
-            this.tv_FolderList.Size = new System.Drawing.Size(247, 662);
+            this.tv_FolderList.Size = new System.Drawing.Size(246, 662);
             this.tv_FolderList.TabIndex = 1;
             this.tv_FolderList.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.tv_FolderList_AfterCollapse);
             this.tv_FolderList.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.tv_FolderList_AfterExpand);
@@ -346,7 +346,7 @@ namespace HDFSTools
             this.lv_ShowFile.HideSelection = false;
             this.lv_ShowFile.Location = new System.Drawing.Point(0, 0);
             this.lv_ShowFile.Name = "lv_ShowFile";
-            this.lv_ShowFile.Size = new System.Drawing.Size(757, 662);
+            this.lv_ShowFile.Size = new System.Drawing.Size(758, 662);
             this.lv_ShowFile.TabIndex = 3;
             this.lv_ShowFile.UseCompatibleStateImageBehavior = false;
             this.lv_ShowFile.View = System.Windows.Forms.View.Details;
@@ -366,7 +366,7 @@ namespace HDFSTools
             // 
             this.sc_Main.Panel2.Controls.Add(this.lv_ShowFile);
             this.sc_Main.Size = new System.Drawing.Size(1008, 662);
-            this.sc_Main.SplitterDistance = 247;
+            this.sc_Main.SplitterDistance = 246;
             this.sc_Main.TabIndex = 4;
             // 
             // ss_ProcessStatus
