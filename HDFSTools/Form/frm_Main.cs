@@ -630,9 +630,7 @@ namespace HDFSTools
         private void GetFirstDirectory(TreeNode tn, string directory)
         {
             this.tv_FolderList.Invoke(new Action(() => {
-                tv_FolderList.BeginUpdate();
                 tn.Nodes.Add(directory);
-                tv_FolderList.EndUpdate();
                 }));
         }
 
@@ -854,12 +852,10 @@ namespace HDFSTools
                     lock (lockObject)
                     {
                         string text = Marshal.PtrToStringAnsi(m.WParam);
-                        tv_FolderList.BeginUpdate();
                         TreeNode tn = new TreeNode(text);
                         tn.ImageIndex = smallImageList.Images.IndexOfKey("folder");
                         tn.SelectedImageIndex = smallImageList.Images.IndexOfKey("folder");
                         tv_FolderList.Nodes[0].Nodes.Add(tn);
-                        tv_FolderList.EndUpdate();
                         Marshal.FreeHGlobal(m.WParam);
                     }
                     break;
