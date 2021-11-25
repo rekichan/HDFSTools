@@ -143,6 +143,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\undo.png" />
+    <None Include="Resource\upward.png" />
     <None Include="Resource\recycle.ico" />
     <None Include="Resource\newfile.ico" />
     <None Include="Resource\FileFolder.png" />
