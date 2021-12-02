@@ -1127,6 +1127,7 @@ namespace HDFSTools
                     lvBit = new bool[6];
                     TCEnterTargetPath(tstb_CurrentPath.Text);
                     InitSearchListView();
+                    InitSearchListView();
                     break;
 
                 case cls_Msg.MAIN_UI_DISABLE:
