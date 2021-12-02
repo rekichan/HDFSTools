@@ -37,7 +37,7 @@ namespace HDFSTools
             string p = txt_Port.Text;
             if (!RegexPort(p))
             {
-                MessageBox.Show("端口号有误!", "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("端口号有误!", "Warn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

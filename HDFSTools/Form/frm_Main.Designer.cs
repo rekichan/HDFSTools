@@ -66,12 +66,15 @@ namespace HDFSTools
             this.lv_ShowSearch = new System.Windows.Forms.ListView();
             this.ss_ProcessStatus = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tssl_Mem = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel6 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tssl_SearchResult = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tssl_SearchPath = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tssl_MemoryUsage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cmsi_DownloadFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmsi_OpenFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.ts_Main.SuspendLayout();
             this.ts_Path.SuspendLayout();
             this.cms_LVShow.SuspendLayout();
@@ -92,9 +95,9 @@ namespace HDFSTools
             this.tsb_Forward,
             this.toolStripSeparator1,
             this.tssb_File,
-            this.tssb_View,
             this.tssb_SysConfig,
-            this.tsb_ActiveGC});
+            this.tsb_ActiveGC,
+            this.tssb_View});
             this.ts_Main.Location = new System.Drawing.Point(0, 0);
             this.ts_Main.Name = "ts_Main";
             this.ts_Main.Size = new System.Drawing.Size(1006, 40);
@@ -148,6 +151,7 @@ namespace HDFSTools
             // 
             // tsmi_UploadFile
             // 
+            this.tsmi_UploadFile.Enabled = false;
             this.tsmi_UploadFile.Image = global::HDFSTools.Properties.Resources.upload;
             this.tsmi_UploadFile.Name = "tsmi_UploadFile";
             this.tsmi_UploadFile.Size = new System.Drawing.Size(224, 26);
@@ -156,6 +160,7 @@ namespace HDFSTools
             // 
             // tsmi_DownloadFile
             // 
+            this.tsmi_DownloadFile.Enabled = false;
             this.tsmi_DownloadFile.Image = global::HDFSTools.Properties.Resources.download;
             this.tsmi_DownloadFile.Name = "tsmi_DownloadFile";
             this.tsmi_DownloadFile.Size = new System.Drawing.Size(224, 26);
@@ -170,6 +175,7 @@ namespace HDFSTools
             this.tsmi_TailIcon,
             this.tsmi_ListIcon,
             this.tsmi_DetailIcon});
+            this.tssb_View.Enabled = false;
             this.tssb_View.Image = global::HDFSTools.Properties.Resources.taillImage;
             this.tssb_View.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tssb_View.Name = "tssb_View";
@@ -181,7 +187,7 @@ namespace HDFSTools
             // 
             this.tsmi_BigIcon.Image = global::HDFSTools.Properties.Resources.bigImage;
             this.tsmi_BigIcon.Name = "tsmi_BigIcon";
-            this.tsmi_BigIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_BigIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_BigIcon.Text = "大图标";
             this.tsmi_BigIcon.Click += new System.EventHandler(this.tsmi_BigIcon_Click);
             // 
@@ -189,7 +195,7 @@ namespace HDFSTools
             // 
             this.tsmi_SmallIcon.Image = global::HDFSTools.Properties.Resources.smallImage;
             this.tsmi_SmallIcon.Name = "tsmi_SmallIcon";
-            this.tsmi_SmallIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_SmallIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_SmallIcon.Text = "小图标";
             this.tsmi_SmallIcon.Click += new System.EventHandler(this.tsmi_SmallIcon_Click);
             // 
@@ -197,7 +203,7 @@ namespace HDFSTools
             // 
             this.tsmi_TailIcon.Image = global::HDFSTools.Properties.Resources.taillImage;
             this.tsmi_TailIcon.Name = "tsmi_TailIcon";
-            this.tsmi_TailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_TailIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_TailIcon.Text = "平铺";
             this.tsmi_TailIcon.Click += new System.EventHandler(this.tsmi_TailIcon_Click);
             // 
@@ -205,7 +211,7 @@ namespace HDFSTools
             // 
             this.tsmi_ListIcon.Image = global::HDFSTools.Properties.Resources.ListImage;
             this.tsmi_ListIcon.Name = "tsmi_ListIcon";
-            this.tsmi_ListIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_ListIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_ListIcon.Text = "列表";
             this.tsmi_ListIcon.Click += new System.EventHandler(this.tsmi_ListIcon_Click);
             // 
@@ -213,7 +219,7 @@ namespace HDFSTools
             // 
             this.tsmi_DetailIcon.Image = global::HDFSTools.Properties.Resources.DetailImage;
             this.tsmi_DetailIcon.Name = "tsmi_DetailIcon";
-            this.tsmi_DetailIcon.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_DetailIcon.Size = new System.Drawing.Size(224, 26);
             this.tsmi_DetailIcon.Text = "详细信息";
             this.tsmi_DetailIcon.Click += new System.EventHandler(this.tsmi_DetailIcon_Click);
             // 
@@ -232,7 +238,7 @@ namespace HDFSTools
             // 
             this.tsmi_ConnectConfig.Image = global::HDFSTools.Properties.Resources.syssetting;
             this.tsmi_ConnectConfig.Name = "tsmi_ConnectConfig";
-            this.tsmi_ConnectConfig.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_ConnectConfig.Size = new System.Drawing.Size(224, 26);
             this.tsmi_ConnectConfig.Text = "连接属性";
             this.tsmi_ConnectConfig.Click += new System.EventHandler(this.tsmi_ConnectConfig_Click);
             // 
@@ -240,7 +246,7 @@ namespace HDFSTools
             // 
             this.tsmi_Connect.Image = global::HDFSTools.Properties.Resources.connect;
             this.tsmi_Connect.Name = "tsmi_Connect";
-            this.tsmi_Connect.Size = new System.Drawing.Size(152, 26);
+            this.tsmi_Connect.Size = new System.Drawing.Size(224, 26);
             this.tsmi_Connect.Text = "连接";
             this.tsmi_Connect.Click += new System.EventHandler(this.tsmi_Connect_Click);
             // 
@@ -275,6 +281,7 @@ namespace HDFSTools
             // tsb_ReturnPrev
             // 
             this.tsb_ReturnPrev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsb_ReturnPrev.Enabled = false;
             this.tsb_ReturnPrev.Image = global::HDFSTools.Properties.Resources.undo;
             this.tsb_ReturnPrev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsb_ReturnPrev.Name = "tsb_ReturnPrev";
@@ -345,16 +352,18 @@ namespace HDFSTools
             this.toolStripLabel3.Name = "toolStripLabel3";
             this.toolStripLabel3.Size = new System.Drawing.Size(84, 20);
             this.toolStripLabel3.Text = "搜索本页：";
+            this.toolStripLabel3.Visible = false;
             // 
             // lv_ShowFile
             // 
             this.lv_ShowFile.ContextMenuStrip = this.cms_LVShow;
             this.lv_ShowFile.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_ShowFile.Enabled = false;
             this.lv_ShowFile.HideSelection = false;
             this.lv_ShowFile.LabelWrap = false;
             this.lv_ShowFile.Location = new System.Drawing.Point(0, 0);
             this.lv_ShowFile.Name = "lv_ShowFile";
-            this.lv_ShowFile.Size = new System.Drawing.Size(1008, 480);
+            this.lv_ShowFile.Size = new System.Drawing.Size(1006, 496);
             this.lv_ShowFile.TabIndex = 3;
             this.lv_ShowFile.UseCompatibleStateImageBehavior = false;
             this.lv_ShowFile.View = System.Windows.Forms.View.Details;
@@ -366,27 +375,31 @@ namespace HDFSTools
             // 
             this.cms_LVShow.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.cms_LVShow.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsi_OpenFolder,
             this.cmsi_Refresh,
-            this.cmsi_UploadFile});
+            this.toolStripSeparator2,
+            this.cmsi_UploadFile,
+            this.cmsi_DownloadFile});
             this.cms_LVShow.Name = "cms_LVShow";
-            this.cms_LVShow.Size = new System.Drawing.Size(139, 52);
+            this.cms_LVShow.Size = new System.Drawing.Size(154, 106);
             // 
             // cmsi_Refresh
             // 
             this.cmsi_Refresh.Name = "cmsi_Refresh";
-            this.cmsi_Refresh.Size = new System.Drawing.Size(138, 24);
+            this.cmsi_Refresh.Size = new System.Drawing.Size(153, 24);
             this.cmsi_Refresh.Text = "刷新(&F5)";
             this.cmsi_Refresh.Click += new System.EventHandler(this.cmsi_Refresh_Click);
             // 
             // cmsi_UploadFile
             // 
             this.cmsi_UploadFile.Name = "cmsi_UploadFile";
-            this.cmsi_UploadFile.Size = new System.Drawing.Size(138, 24);
+            this.cmsi_UploadFile.Size = new System.Drawing.Size(153, 24);
             this.cmsi_UploadFile.Text = "上传文件";
             this.cmsi_UploadFile.Click += new System.EventHandler(this.cmsi_UploadFile_Click);
             // 
             // sc_Main
             // 
+            this.sc_Main.Dock = System.Windows.Forms.DockStyle.Top;
             this.sc_Main.Location = new System.Drawing.Point(0, 67);
             this.sc_Main.Name = "sc_Main";
             this.sc_Main.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -398,17 +411,18 @@ namespace HDFSTools
             // sc_Main.Panel2
             // 
             this.sc_Main.Panel2.Controls.Add(this.lv_ShowSearch);
-            this.sc_Main.Size = new System.Drawing.Size(1008, 637);
-            this.sc_Main.SplitterDistance = 480;
+            this.sc_Main.Size = new System.Drawing.Size(1006, 644);
+            this.sc_Main.SplitterDistance = 496;
             this.sc_Main.TabIndex = 4;
             // 
             // lv_ShowSearch
             // 
             this.lv_ShowSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_ShowSearch.Enabled = false;
             this.lv_ShowSearch.HideSelection = false;
             this.lv_ShowSearch.Location = new System.Drawing.Point(0, 0);
             this.lv_ShowSearch.Name = "lv_ShowSearch";
-            this.lv_ShowSearch.Size = new System.Drawing.Size(1008, 153);
+            this.lv_ShowSearch.Size = new System.Drawing.Size(1006, 144);
             this.lv_ShowSearch.TabIndex = 1;
             this.lv_ShowSearch.UseCompatibleStateImageBehavior = false;
             this.lv_ShowSearch.View = System.Windows.Forms.View.Details;
@@ -420,7 +434,7 @@ namespace HDFSTools
             this.ss_ProcessStatus.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.ss_ProcessStatus.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel4,
-            this.tssl_Mem,
+            this.tssl_MemoryUsage,
             this.toolStripStatusLabel6,
             this.toolStripStatusLabel1,
             this.tssl_SearchResult,
@@ -437,12 +451,6 @@ namespace HDFSTools
             this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
             this.toolStripStatusLabel4.Size = new System.Drawing.Size(144, 20);
             this.toolStripStatusLabel4.Text = "当前程序内存使用：";
-            // 
-            // tssl_Mem
-            // 
-            this.tssl_Mem.Name = "tssl_Mem";
-            this.tssl_Mem.Size = new System.Drawing.Size(24, 20);
-            this.tssl_Mem.Text = "-1";
             // 
             // toolStripStatusLabel6
             // 
@@ -473,6 +481,31 @@ namespace HDFSTools
             this.tssl_SearchPath.Name = "tssl_SearchPath";
             this.tssl_SearchPath.Size = new System.Drawing.Size(48, 20);
             this.tssl_SearchPath.Text = "NULL";
+            // 
+            // tssl_MemoryUsage
+            // 
+            this.tssl_MemoryUsage.Name = "tssl_MemoryUsage";
+            this.tssl_MemoryUsage.Size = new System.Drawing.Size(24, 20);
+            this.tssl_MemoryUsage.Text = "-1";
+            // 
+            // cmsi_DownloadFile
+            // 
+            this.cmsi_DownloadFile.Name = "cmsi_DownloadFile";
+            this.cmsi_DownloadFile.Size = new System.Drawing.Size(153, 24);
+            this.cmsi_DownloadFile.Text = "下载文件";
+            this.cmsi_DownloadFile.Click += new System.EventHandler(this.cmsi_DownloadFile_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(150, 6);
+            // 
+            // cmsi_OpenFolder
+            // 
+            this.cmsi_OpenFolder.Name = "cmsi_OpenFolder";
+            this.cmsi_OpenFolder.Size = new System.Drawing.Size(153, 24);
+            this.cmsi_OpenFolder.Text = "打开文件夹";
+            this.cmsi_OpenFolder.Click += new System.EventHandler(this.cmsi_OpenFolder_Click);
             // 
             // frm_Main
             // 
@@ -544,8 +577,6 @@ namespace HDFSTools
         private System.Windows.Forms.ToolStripButton tsb_ActiveGC;
         private System.Windows.Forms.StatusStrip ss_ProcessStatus;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
-        private System.Windows.Forms.ToolStripStatusLabel tssl_Mem;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
         private System.Windows.Forms.ToolStripButton tsb_ReturnPrev;
         private System.Windows.Forms.ListView lv_ShowSearch;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
@@ -555,6 +586,11 @@ namespace HDFSTools
         private System.Windows.Forms.ContextMenuStrip cms_LVShow;
         private System.Windows.Forms.ToolStripMenuItem cmsi_Refresh;
         private System.Windows.Forms.ToolStripMenuItem cmsi_UploadFile;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel6;
+        private System.Windows.Forms.ToolStripStatusLabel tssl_MemoryUsage;
+        private System.Windows.Forms.ToolStripMenuItem cmsi_DownloadFile;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem cmsi_OpenFolder;
     }
 }
 

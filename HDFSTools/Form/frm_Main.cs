@@ -124,6 +124,16 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void cmsi_DownloadFile_Click(object sender, EventArgs e)
+        {
+            DownloadFile();
+        }
+
+        private void cmsi_OpenFolder_Click(object sender, EventArgs e)
+        {
+            OpenFolder();
+        }
+
         private void cmsi_UploadFile_Click(object sender, EventArgs e)
         {
             UploadFile();
@@ -326,36 +336,7 @@ namespace HDFSTools
 
         private void lv_ShowFile_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (lv_ShowFile.SelectedIndices.Count <= 0)
-                return;
-
-            string currentPath = tstb_CurrentPath.Text;
-            if (!currentPath.EndsWith("/"))
-                currentPath += "/";
-            string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
-            string[] infos = Regex.Split(info, "~>");
-            if ("FILE".Equals(infos[6]))
-                return;
-            lv_ShowFile.SelectedIndices.Clear();
-            string newPath = currentPath + infos[0] + "/";
-            tstb_CurrentPath.Text = currentPath + infos[0];
-            this.currentPath = tstb_CurrentPath.Text;
-            backwardStack.Push(this.currentPath);
-            forwardStack.Clear();
-
-            showDirectoryAndFile showFile = new showDirectoryAndFile(InvokeEnterTargetPath);
-            showFile.BeginInvoke(newPath, null, null);
-
-            /*lv_ShowFile.Clear();
-            lv_ShowFile.AllowColumnReorder = true;
-            lv_ShowFile.Columns.Add("name", "name", 250);
-            lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
-            lv_ShowFile.Columns.Add("owner", "owner", 100);
-            lv_ShowFile.Columns.Add("group", "group", 100);
-            lv_ShowFile.Columns.Add("replication", "replication", 200);*/
-
-            //CommonEnterTargetPath(newPath);
+            OpenFolder();
         }
 
         /*private void tv_FolderList_AfterSelect(object sender, TreeViewEventArgs e)
@@ -442,7 +423,44 @@ namespace HDFSTools
 
         #region Function
         /// <summary>
-        /// 下载文件
+        /// 打开选中的文件夹
+        /// </summary>
+        private void OpenFolder()
+        {
+            if (lv_ShowFile.SelectedIndices.Count <= 0)
+                return;
+
+            string currentPath = tstb_CurrentPath.Text;
+            if (!currentPath.EndsWith("/"))
+                currentPath += "/";
+            string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
+            string[] infos = Regex.Split(info, "~>");
+            if ("FILE".Equals(infos[6].ToUpper()))
+                return;
+            lv_ShowFile.SelectedIndices.Clear();
+            string newPath = currentPath + infos[0] + "/";
+            tstb_CurrentPath.Text = currentPath + infos[0];
+            this.currentPath = tstb_CurrentPath.Text;
+            backwardStack.Push(this.currentPath);
+            forwardStack.Clear();
+
+            showDirectoryAndFile showFile = new showDirectoryAndFile(InvokeEnterTargetPath);
+            showFile.BeginInvoke(newPath, null, null);
+
+            /*lv_ShowFile.Clear();
+            lv_ShowFile.AllowColumnReorder = true;
+            lv_ShowFile.Columns.Add("name", "name", 250);
+            lv_ShowFile.Columns.Add("size", "size", 100);
+            lv_ShowFile.Columns.Add("permission", "permission", 100);
+            lv_ShowFile.Columns.Add("owner", "owner", 100);
+            lv_ShowFile.Columns.Add("group", "group", 100);
+            lv_ShowFile.Columns.Add("replication", "replication", 200);*/
+
+            //CommonEnterTargetPath(newPath);
+        }
+
+        /// <summary>
+        /// 下载选中的文件
         /// </summary>
         private void DownloadFile()
         {
@@ -455,31 +473,49 @@ namespace HDFSTools
             FileStream fs = null;
             try
             {
-                //string remote = "http://wh0:9870/webhdfs/v1/1.flow?op=OPEN";
-                //string local = "D:\\1.flow";
-                string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
-                string[] infos = Regex.Split(info, "~>");
-                string remote = "http://" + cls_Config.host + ":" + cls_Config.port + "/webhdfs/v1/"+infos[0]+"?op=OPEN";
-                return;
-
-                //还没测试完，今日到此为止 -20211203 01:23
-                client = new WebClient();
-                byte[] bs = client.DownloadData(remote);
-                fs = File.Open("", FileMode.Create);
-                fs.Write(bs, 0, bs.Length);
-                /*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
-                //request.Method = "POST";
-                //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                //long totalBytes = request.ContentLength;
-                input = request.GetRequestStream();
-                output = new FileStream(local, FileMode.Create);
-                byte[] bytes = new byte[1024];
-                int outputSize = input.Read(bytes, 0, bytes.Length);
-                while (outputSize > 0)
+                using (FolderBrowserDialog fbd = new FolderBrowserDialog())
                 {
-                    output.Write(bytes, 0, outputSize);
-                    outputSize = input.Read(bytes, 0, bytes.Length);
-                }*/
+                    DialogResult dr = fbd.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        //string remote = "http://wh0:9870/webhdfs/v1/1.flow?op=OPEN";
+                        //string local = "D:\\1.flow";
+                        string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
+                        string[] infos = Regex.Split(info, "~>");
+                        string target = fbd.SelectedPath + "\\" + infos[0];
+                        if (File.Exists(target))
+                        {
+                            MessageBox.Show("目标路径已存在同名文件!", "Warn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        if ("DIRECTORY".Equals(infos[6].ToUpper()))
+                        {
+                            MessageBox.Show("下载的目标不为文件!", "Warn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+
+                        string file = (this.currentPath.EndsWith("/") ? this.currentPath : this.currentPath + "/") + infos[0];
+                        string remote = "http://" + cls_Config.host + ":" + cls_Config.port + "/webhdfs/v1" + file + "?op=OPEN";
+                        client = new WebClient();
+                        byte[] bs = client.DownloadData(remote);
+                        fs = File.Open(target, FileMode.Create);
+                        fs.Write(bs, 0, bs.Length);
+                        /*HttpWebRequest request = (HttpWebRequest)WebRequest.Create(remote);
+                        //request.Method = "POST";
+                        //HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                        //long totalBytes = request.ContentLength;
+                        input = request.GetRequestStream();
+                        output = new FileStream(local, FileMode.Create);
+                        byte[] bytes = new byte[1024];
+                        int outputSize = input.Read(bytes, 0, bytes.Length);
+                        while (outputSize > 0)
+                        {
+                            output.Write(bytes, 0, outputSize);
+                            outputSize = input.Read(bytes, 0, bytes.Length);
+                        }*/
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -562,16 +598,19 @@ namespace HDFSTools
                 WebClient client = new WebClient();
                 client.UploadFile(remote, "PUT", local);*/
 
-                //http://wh0:9870/webhdfs/v1/abc.txt?op=CREATE&noredirect=true
-
+                //http://wh0:9870/webhdfs/v1/abc.txt?op=CREATE&noredirect=true 在根目录
+                //http://wh0:9870/webhdfs/v1/haha/abc.txt?op=CREATE&noredirect=true 在指定目录
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
                     DialogResult dr = ofd.ShowDialog();
                     if (dr == DialogResult.OK)
                     {
+                        string path = this.currentPath;
+                        if (!path.EndsWith("/"))
+                            path += "/";
                         string local = ofd.FileName;
                         string fileName = Path.GetFileName(local);
-                        string remote = "http://" + cls_Config.host + ":" + cls_Config.port + "/webhdfs/v1/" + fileName + "?user.name=" + cls_Config.userName + "&op=CREATE";
+                        string remote = "http://" + cls_Config.host + ":" + cls_Config.port + "/webhdfs/v1" + path + fileName + "?user.name=" + cls_Config.userName + "&op=CREATE";
                         client = new WebClient();
                         client.UploadFile(remote, "PUT", local);
                         TCEnterTargetPath(this.currentPath);
@@ -703,9 +742,17 @@ namespace HDFSTools
         /// <param name="directory"></param>
         private void CommonEnterTargetPath(string directory)
         {
-            itemSource.Clear();
-            lv_ShowFile.VirtualMode = false;
-            InitShowListView();
+            try
+            {
+                itemSource.Clear();
+                lv_ShowFile.VirtualMode = false;
+                InitShowListView();
+            }
+            catch (Exception ex)
+            {
+                logger.WriteExceptionLog(ex);
+                return;
+            }
 
             HDFS.client.GetDirectoryStatus(directory)
                 .ContinueWith(ds =>
@@ -754,12 +801,20 @@ namespace HDFSTools
         /// <summary>
         /// try-catch进入HDFS目标目录
         /// </summary>
-        /// <param name="directory"></param>
+        /// <param name="directory">目标路径</param>
         private void TCEnterTargetPath(string directory)
         {
-            itemSource.Clear();
-            lv_ShowFile.VirtualMode = false;
-            InitShowListView();
+            try
+            {
+                itemSource.Clear();
+                lv_ShowFile.VirtualMode = false;
+                InitShowListView();
+            }
+            catch (Exception ex)
+            {
+                logger.WriteExceptionLog(ex);
+                return;
+            }
 
             HDFS.client.GetDirectoryStatus(directory)
             .ContinueWith(ds =>
@@ -820,9 +875,17 @@ namespace HDFSTools
         /// <param name="search"></param>
         private void TCFEnterTargetPath(string directory, bool search)
         {
-            itemSource.Clear();
-            lv_ShowFile.VirtualMode = false;
-            InitShowListView();
+            try
+            {
+                itemSource.Clear();
+                lv_ShowFile.VirtualMode = false;
+                InitShowListView();
+            }
+            catch (Exception ex)
+            {
+                logger.WriteExceptionLog(ex);
+                return;
+            }
 
             HDFS.client.GetDirectoryStatus(directory)
             .ContinueWith(ds =>
@@ -988,9 +1051,9 @@ namespace HDFSTools
         }
 
         /// <summary>
-        /// 主界面UI使能
+        /// 主界面UI激活
         /// </summary>
-        /// <param name="enable">使能</param>
+        /// <param name="enable">激活</param>
         public void RefreshUIEnable(bool enable = false)
         {
             tsb_Backward.Enabled = enable;
@@ -998,15 +1061,19 @@ namespace HDFSTools
             tsb_Refresh.Enabled = enable;
             tsb_Enter.Enabled = enable;
             tsb_Search.Enabled = enable;
+            tsb_ReturnPrev.Enabled = enable;
 
             tssb_File.Enabled = enable;
-
             tstb_CurrentPath.Enabled = enable;
             tstb_Search.Enabled = enable;
 
             //tv_FolderList.Enabled = enable;
 
             lv_ShowFile.Enabled = enable;
+            lv_ShowSearch.Enabled = enable;
+
+            tsmi_UploadFile.Enabled = enable;
+            tsmi_DownloadFile.Enabled = enable;
         }
 
         /*/// <summary>
@@ -1066,6 +1133,8 @@ namespace HDFSTools
             int lastTick = GetTickCount();
             while (loopMonitor)
             {
+                //循环检测系统内存使用量
+                //如果内存使用量>120M&&强制GC时间间隔>20s则强制GC一次，防止因为系统GC不及时导致内存使用量过大
                 double memUsed = Math.Round(pf.NextValue() / 1024.0 / 1024.0, 2);
                 int currentTick = GetTickCount();
                 if (currentTick - lastTick > 20000 && memUsed > 120)
@@ -1114,7 +1183,7 @@ namespace HDFSTools
 
                 case cls_Msg.SHOW_MEMORY_USED:
                     string memory = Marshal.PtrToStringAnsi(m.WParam);
-                    tssl_Mem.Text = memory;
+                    tssl_MemoryUsage.Text = memory;
                     Marshal.FreeHGlobal(m.WParam);
                     break;
 
@@ -1126,6 +1195,7 @@ namespace HDFSTools
                     forwardStack.Clear();
                     lvBit = new bool[6];
                     TCEnterTargetPath(tstb_CurrentPath.Text);
+                    InitSearchListView();
                     InitSearchListView();
                     break;
 
