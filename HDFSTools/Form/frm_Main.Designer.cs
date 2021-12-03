@@ -409,12 +409,10 @@ namespace HDFSTools
             this.sc_Main.Panel1.Controls.Add(this.lv_ShowFile);
             // 
             // sc_Main.Panel2
-            // 
             this.sc_Main.Panel2.Controls.Add(this.lv_ShowSearch);
             this.sc_Main.Size = new System.Drawing.Size(1006, 644);
             this.sc_Main.SplitterDistance = 496;
             this.sc_Main.TabIndex = 4;
-            // 
             // lv_ShowSearch
             // 
             this.lv_ShowSearch.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -428,6 +426,7 @@ namespace HDFSTools
             this.lv_ShowSearch.View = System.Windows.Forms.View.Details;
             this.lv_ShowSearch.ColumnReordered += new System.Windows.Forms.ColumnReorderedEventHandler(this.lv_ShowSearch_ColumnReordered);
             this.lv_ShowSearch.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lv_ShowSearch_MouseDoubleClick);
+            // 
             // 
             // ss_ProcessStatus
             // 
@@ -457,7 +456,6 @@ namespace HDFSTools
             this.toolStripStatusLabel6.Name = "toolStripStatusLabel6";
             this.toolStripStatusLabel6.Size = new System.Drawing.Size(33, 20);
             this.toolStripStatusLabel6.Text = "MB";
-            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
