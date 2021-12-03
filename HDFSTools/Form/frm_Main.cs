@@ -423,6 +423,109 @@ namespace HDFSTools
 
         #region Function
         /// <summary>
+        /// 返回特殊权限
+        /// </summary>
+        /// <param name="single"></param>
+        /// <returns></returns>
+        private string SpecialPermission(char single)
+        {
+            string buf;
+            switch (single)
+            {
+                case '1':
+                    buf = "o";
+                    break;
+
+                case '2':
+                    buf = "g";
+                    break;
+
+                case '4':
+                    buf = "u";
+                    break;
+
+                default:
+                    buf = "-";
+                    break;
+            }
+            return buf;
+        }
+
+        /// <summary>
+        /// 返回单个普通权限
+        /// </summary>
+        /// <param name="single"></param>
+        /// <returns></returns>
+        private string CommonPermission(char single)
+        {
+            string buf;
+            switch (single)
+            {
+                case '1':
+                    buf = "--x";
+                    break;
+
+                case '2':
+                    buf = "-w-";
+                    break;
+
+                case '3':
+                    buf = "-wx";
+                    break;
+
+                case '4':
+                    buf = "r--";
+                    break;
+
+                case '5':
+                    buf = "r-x";
+                    break;
+
+                case '6':
+                    buf = "rw-";
+                    break;
+
+                case '7':
+                    buf = "rwx";
+                    break;
+
+                default:
+                    buf = "---";
+                    break;
+            }
+            return buf;
+        }
+
+        /// <summary>
+        /// 返回最终权限
+        /// </summary>
+        /// <param name="origin"></param>
+        /// <returns></returns>
+        private string Permission(string origin)
+        {
+            string pmn = "";
+            if (origin.Length == 3)
+            {
+                for(int i = 0; i < origin.Length; i++)
+                {
+                    pmn += CommonPermission(origin[i]);
+                }
+                origin = pmn;
+            }
+            else if (origin.Length == 4)
+            {
+                pmn = SpecialPermission(origin[0]);
+                for(int i = 1; i < origin.Length; i++)
+                {
+                    pmn += CommonPermission(origin[i]);
+                }
+                origin = pmn;
+            }
+
+            return origin;
+        }
+
+        /// <summary>
         /// 打开选中的文件夹
         /// </summary>
         private void OpenFolder()
@@ -635,9 +738,9 @@ namespace HDFSTools
         private void InitSearchListView()
         {
             lv_ShowSearch.AllowColumnReorder = false;
-            lv_ShowSearch.Columns.Add("name", "name", 250);
+            lv_ShowSearch.Columns.Add("name", "name", 350);
             lv_ShowSearch.Columns.Add("size", "size", 100);
-            lv_ShowSearch.Columns.Add("permission", "permission", 100);
+            lv_ShowSearch.Columns.Add("permission", "permission", 125);
             lv_ShowSearch.Columns.Add("owner", "owner", 100);
             lv_ShowSearch.Columns.Add("group", "group", 100);
             lv_ShowSearch.Columns.Add("modifiedtime", "modifiedtime", 200);
@@ -650,9 +753,9 @@ namespace HDFSTools
         {
             lv_ShowFile.Clear();
             lv_ShowFile.AllowColumnReorder = true;
-            lv_ShowFile.Columns.Add("name", "name", 250);
+            lv_ShowFile.Columns.Add("name", "name", 350);
             lv_ShowFile.Columns.Add("size", "size", 100);
-            lv_ShowFile.Columns.Add("permission", "permission", 100);
+            lv_ShowFile.Columns.Add("permission", "permission", 125);
             lv_ShowFile.Columns.Add("owner", "owner", 100);
             lv_ShowFile.Columns.Add("group", "group", 100);
             lv_ShowFile.Columns.Add("modifiedtime", "modifiedtime", 200);
@@ -1222,13 +1325,21 @@ namespace HDFSTools
                         string[] infos = Regex.Split(info, "~>");
                         ListViewItem item = new ListViewItem();
                         item.Text = infos[0];
+                        string permission = infos[2];
+                        permission = Permission(permission);
                         item.Tag = info;
-                        if ("DIRECTORY".Equals(infos[6]))
+                        if ("DIRECTORY".Equals(infos[6].ToUpper()))
+                        {
                             item.ImageIndex = smallImageList.Images.IndexOfKey("folder");
+                            permission = "d" + permission;
+                        }
                         else
+                        {
                             item.ImageIndex = smallImageList.Images.IndexOfKey("file");
+                            permission = "-" + permission;
+                        }
                         item.SubItems.Add(infos[1] + "B");
-                        item.SubItems.Add(infos[2]);
+                        item.SubItems.Add(permission);
                         item.SubItems.Add(infos[3]);
                         item.SubItems.Add(infos[4]);
                         item.SubItems.Add(infos[5]);
