@@ -1159,6 +1159,8 @@ namespace HDFSTools
         /// <param name="enable">激活</param>
         public void RefreshUIEnable(bool enable = false)
         {
+            sc_Main.Enabled = enable;
+
             tsb_Backward.Enabled = enable;
             tsb_Forward.Enabled = enable;
             tsb_Refresh.Enabled = enable;

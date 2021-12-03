@@ -419,6 +419,7 @@ namespace HDFSTools
             // sc_Main
             // 
             this.sc_Main.Dock = System.Windows.Forms.DockStyle.Top;
+            this.sc_Main.Enabled = false;
             this.sc_Main.Location = new System.Drawing.Point(0, 67);
             this.sc_Main.Name = "sc_Main";
             this.sc_Main.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -525,7 +526,7 @@ namespace HDFSTools
             this.MinimumSize = new System.Drawing.Size(1024, 768);
             this.Name = "frm_Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "HDFS Tools";
+            this.Text = "HDFS Tools For Windows";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_Main_FormClosing);
             this.Load += new System.EventHandler(this.frm_Main_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frm_Main_KeyDown);
