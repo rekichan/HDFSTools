@@ -423,6 +423,7 @@ namespace HDFSTools
 
         #region Function
         /// <summary>
+<<<<<<< HEAD
         /// 返回特殊权限
         /// </summary>
         /// <param name="single"></param>
@@ -526,6 +527,8 @@ namespace HDFSTools
         }
 
         /// <summary>
+=======
+>>>>>>> 3882f6f04d53b10b766553505a3864ae81d666a1
         /// 打开选中的文件夹
         /// </summary>
         private void OpenFolder()
