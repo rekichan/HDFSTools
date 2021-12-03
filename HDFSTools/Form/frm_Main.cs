@@ -124,6 +124,20 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void tsb_ConnectConfig_Click(object sender, EventArgs e)
+        {
+            frm_Config fc = new frm_Config();
+            fc.ShowDialog();
+        }
+
+        private void tsb_Connect_Click(object sender, EventArgs e)
+        {
+            if (linkStatus || initTaskFlag)
+                return;
+
+            InitHDFS();
+        }
+
         private void cmsi_DownloadFile_Click(object sender, EventArgs e)
         {
             DownloadFile();
@@ -380,20 +394,6 @@ namespace HDFSTools
         {
             lv_ShowFile.VirtualMode = false;
             lv_ShowFile.View = View.Details;
-        }
-
-        private void tsmi_ConnectConfig_Click(object sender, EventArgs e)
-        {
-            frm_Config fc = new frm_Config();
-            fc.ShowDialog();
-        }
-
-        private void tsmi_Connect_Click(object sender, EventArgs e)
-        {
-            if (linkStatus || initTaskFlag)
-                return;
-
-            InitHDFS();
         }
 
         private void tsb_Forward_Click(object sender, EventArgs e)
@@ -1167,6 +1167,7 @@ namespace HDFSTools
             tsb_Enter.Enabled = enable;
             tsb_Search.Enabled = enable;
             tsb_ReturnPrev.Enabled = enable;
+            tsb_Connect.Enabled = !enable;
 
             tssb_File.Enabled = enable;
             tstb_CurrentPath.Enabled = enable;
@@ -1179,6 +1180,17 @@ namespace HDFSTools
 
             tsmi_UploadFile.Enabled = enable;
             tsmi_DownloadFile.Enabled = enable;
+
+            if (enable)
+            {
+                tssl_LinkStatus.Text = "已链接";
+                tssl_LinkStatus.BackColor = Color.Lime;
+            }
+            else
+            {
+                tssl_LinkStatus.Text = "未连接";
+                tssl_LinkStatus.BackColor = Color.Red;
+            }
         }
 
         /*/// <summary>
@@ -1300,7 +1312,6 @@ namespace HDFSTools
                     forwardStack.Clear();
                     lvBit = new bool[6];
                     TCEnterTargetPath(tstb_CurrentPath.Text);
-                    InitSearchListView();
                     InitSearchListView();
                     break;
 
