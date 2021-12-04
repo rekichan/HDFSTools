@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 using Microsoft.Hadoop.WebHDFS;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
+using RestSharp;
 
 namespace HDFSTools
 {
@@ -124,6 +123,61 @@ namespace HDFSTools
         #endregion
 
         #region Event
+        private void tsb_Exit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void tsmi_DeleteFile_Click(object sender, EventArgs e)
+        {
+            DeleteFileOrFolder();
+        }
+
+        private void csmi_Delete_Click(object sender, EventArgs e)
+        {
+            DeleteFileOrFolder();
+        }
+
+        private void lv_ShowSearch_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lv_ShowSearch.SelectedIndices.Count != 0)
+                lv_ShowFile.SelectedIndices.Clear();
+        }
+
+        private void lv_ShowFile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (lv_ShowFile.SelectedIndices.Count != 0)
+                lv_ShowSearch.SelectedIndices.Clear();
+        }
+
+        private void lv_ShowSearch_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                OpenSearchFolder();
+            }
+        }
+
+        private void lv_ShowFile_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                OpenFolder();
+            }
+        }
+
+        private void tsmi_CreateFolder_Click(object sender, EventArgs e)
+        {
+            frm_CreateFolder cf = new frm_CreateFolder(this.currentPath);
+            cf.ShowDialog();
+        }
+
+        private void cmsi_CreateFolder_Click(object sender, EventArgs e)
+        {
+            frm_CreateFolder cf = new frm_CreateFolder(this.currentPath);
+            cf.ShowDialog();
+        }
+
         private void tsb_ConnectConfig_Click(object sender, EventArgs e)
         {
             frm_Config fc = new frm_Config();
@@ -193,31 +247,7 @@ namespace HDFSTools
 
         private void lv_ShowSearch_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (lv_ShowSearch.SelectedIndices.Count <= 0)
-                return;
-
-            string info = searchSource[lv_ShowSearch.SelectedIndices[0]].Tag.ToString();
-            string[] infos = Regex.Split(info, "~>");
-            if ("FILE".Equals(infos[6]))
-                return;
-
-            string currentDic = currentPath.EndsWith("/") ? infos[7] + infos[0] : infos[7] + "/" + infos[0];
-            string target = currentDic;
-
-            if (this.currentPath.Equals(currentDic))
-                return;
-
-            if (!target.EndsWith("/"))
-                target += "/";
-
-            lv_ShowSearch.SelectedIndices.Clear();
-            tstb_CurrentPath.Text = currentDic;
-            this.currentPath = tstb_CurrentPath.Text;
-            backwardStack.Push(this.currentPath);
-            forwardStack.Clear();
-
-            showDirectoryAndFile showFile = new showDirectoryAndFile(InvokeEnterTargetPath);
-            showFile.BeginInvoke(currentDic, null, null);
+            OpenSearchFolder();
         }
 
         private void tstb_Search_KeyDown(object sender, KeyEventArgs e)
@@ -423,9 +453,83 @@ namespace HDFSTools
 
         #region Function
         /// <summary>
+        /// 删除文件
+        /// </summary>
+        /// <param name="target">文件或文件夹路径</param>
+        private void DeleteFileOrFolder()
+        {
+            if (lv_ShowFile.SelectedIndices.Count <= 0)
+                return;
+
+            DialogResult dr = MessageBox.Show("确定要删除文件?", "Q", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dr != DialogResult.Yes)
+                return;
+
+            try
+            {
+                string info = itemSource[lv_ShowFile.SelectedIndices[0]].Tag.ToString();
+                string[] infos = Regex.Split(info, "~>");
+                string target = (this.currentPath.EndsWith("/") ? this.currentPath : this.currentPath + "/") + infos[0];
+                lv_ShowFile.FocusedItem = null;
+                lv_ShowFile.SelectedIndices.Clear();
+                string uri = "http://" + cls_Config.host + ":" + cls_Config.port;
+                string req = "webhdfs/v1/" + target + "?op=DELETE&recursive=true";
+                RestClient client = new RestClient(uri);
+                RestRequest request = new RestRequest(req);
+                client.Delete(request);
+                TCEnterTargetPath(this.currentPath);
+                if ("DIRECTORY".Equals(infos[6].ToUpper()))
+                {
+                    if (forwardStack.Count > 0)
+                    {
+                        string forward = forwardStack.Peek();
+                        if (target.Equals(forward))
+                            forwardStack.Clear();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logger.WriteExceptionLog(ex);
+            }
+        }
+
+        /// <summary>
+        /// 创建文件夹
+        /// </summary>
+        /// <param name="folderName">文件夹名</param>
+        private void CreateFolder(string folderName)
+        {
+            try
+            {
+                /*string localPath = System.Web.HttpContext.Current.Server.MapPath("D:\\python image source.txt");
+               HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(localPath);
+               webRequest.Method = "POST";
+               webRequest.AllowAutoRedirect = false;
+               HttpWebResponse webResponse = (HttpWebResponse)webRequest.GetResponse();
+               string result = webResponse.Headers["Location"];*/
+
+                //http://wh0:9870/webhdfs/v1/hehe?op=MKDIRS 单层创建
+                //http://wh0:9870/webhdfs/v1/gaga/gege?op=MKDIRS 复合创建
+                string uri = "http://" + cls_Config.host + ":" + cls_Config.port;
+                string req = "webhdfs/v1/" + folderName + "?op=MKDIRS";
+                RestClient client = new RestClient(uri);
+                RestRequest request = new RestRequest(req);
+                client.Put(request);
+                TCEnterTargetPath(this.currentPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Err", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logger.WriteExceptionLog(ex);
+            }
+        }
+
+        /// <summary>
         /// 返回特殊权限
         /// </summary>
-        /// <param name="single"></param>
+        /// <param name="single">单个权限字符</param>
         /// <returns></returns>
         private string SpecialPermission(char single)
         {
@@ -454,7 +558,7 @@ namespace HDFSTools
         /// <summary>
         /// 返回单个普通权限
         /// </summary>
-        /// <param name="single"></param>
+        /// <param name="single">单个权限字符</param>
         /// <returns></returns>
         private string CommonPermission(char single)
         {
@@ -499,14 +603,14 @@ namespace HDFSTools
         /// <summary>
         /// 返回最终权限
         /// </summary>
-        /// <param name="origin"></param>
+        /// <param name="origin">原始权限字符</param>
         /// <returns></returns>
         private string Permission(string origin)
         {
             string pmn = "";
             if (origin.Length == 3)
             {
-                for(int i = 0; i < origin.Length; i++)
+                for (int i = 0; i < origin.Length; i++)
                 {
                     pmn += CommonPermission(origin[i]);
                 }
@@ -515,7 +619,7 @@ namespace HDFSTools
             else if (origin.Length == 4)
             {
                 pmn = SpecialPermission(origin[0]);
-                for(int i = 1; i < origin.Length; i++)
+                for (int i = 1; i < origin.Length; i++)
                 {
                     pmn += CommonPermission(origin[i]);
                 }
@@ -526,7 +630,39 @@ namespace HDFSTools
         }
 
         /// <summary>
-        /// 打开选中的文件夹
+        /// 打开搜索栏中被选中的文件夹
+        /// </summary>
+        private void OpenSearchFolder()
+        {
+            if (lv_ShowSearch.SelectedIndices.Count <= 0)
+                return;
+
+            string info = searchSource[lv_ShowSearch.SelectedIndices[0]].Tag.ToString();
+            string[] infos = Regex.Split(info, "~>");
+            if ("FILE".Equals(infos[6]))
+                return;
+
+            string currentDic = currentPath.EndsWith("/") ? infos[7] + infos[0] : infos[7] + "/" + infos[0];
+            string target = currentDic;
+
+            if (this.currentPath.Equals(currentDic))
+                return;
+
+            if (!target.EndsWith("/"))
+                target += "/";
+
+            lv_ShowSearch.SelectedIndices.Clear();
+            tstb_CurrentPath.Text = currentDic;
+            this.currentPath = tstb_CurrentPath.Text;
+            backwardStack.Push(this.currentPath);
+            forwardStack.Clear();
+
+            showDirectoryAndFile showFile = new showDirectoryAndFile(InvokeEnterTargetPath);
+            showFile.BeginInvoke(currentDic, null, null);
+        }
+
+        /// <summary>
+        /// 打开被选中的文件夹
         /// </summary>
         private void OpenFolder()
         {
@@ -778,6 +914,7 @@ namespace HDFSTools
         {
             this.lv_ShowFile.Invoke(new Action(() =>
             {
+                lv_ShowFile.SelectedIndices.Clear();
                 itemSource.Clear();
                 try
                 {
@@ -842,11 +979,12 @@ namespace HDFSTools
         /// <summary>
         /// no-try进入HDFS目标目录
         /// </summary>
-        /// <param name="directory"></param>
+        /// <param name="directory">目标路径</param>
         private void CommonEnterTargetPath(string directory)
         {
             try
             {
+                lv_ShowFile.SelectedIndices.Clear();
                 itemSource.Clear();
                 lv_ShowFile.VirtualMode = false;
                 InitShowListView();
@@ -909,6 +1047,7 @@ namespace HDFSTools
         {
             try
             {
+                lv_ShowFile.SelectedIndices.Clear();
                 itemSource.Clear();
                 lv_ShowFile.VirtualMode = false;
                 InitShowListView();
@@ -974,12 +1113,13 @@ namespace HDFSTools
         /// <summary>
         /// try-catch-finally进入HDFS目标目录
         /// </summary>
-        /// <param name="directory"></param>
-        /// <param name="search"></param>
+        /// <param name="directory">目标路径</param>
+        /// <param name="search">是否为搜索</param>
         private void TCFEnterTargetPath(string directory, bool search)
         {
             try
             {
+                lv_ShowFile.SelectedIndices.Clear();
                 itemSource.Clear();
                 lv_ShowFile.VirtualMode = false;
                 InitShowListView();
@@ -1156,7 +1296,7 @@ namespace HDFSTools
         /// <summary>
         /// 主界面UI激活
         /// </summary>
-        /// <param name="enable">激活</param>
+        /// <param name="enable">是否激活</param>
         public void RefreshUIEnable(bool enable = false)
         {
             sc_Main.Enabled = enable;
@@ -1178,8 +1318,18 @@ namespace HDFSTools
             lv_ShowFile.Enabled = enable;
             lv_ShowSearch.Enabled = enable;
 
+            //
+            tsmi_DeleteFile.Enabled = enable;
             tsmi_UploadFile.Enabled = enable;
             tsmi_DownloadFile.Enabled = enable;
+            tsmi_CreateFolder.Enabled = enable;
+
+            cmsi_Delete.Enabled = enable;
+            cmsi_CreateFolder.Enabled = enable;
+            cmsi_OpenFolder.Enabled = enable;
+            cmsi_Refresh.Enabled = enable;
+            cmsi_UploadFile.Enabled = enable;
+            cmsi_DownloadFile.Enabled = enable;
 
             if (enable)
             {
@@ -1365,10 +1515,17 @@ namespace HDFSTools
                 case cls_Msg.NAVIGATE_PATH_CHANGE:
                     string path = Marshal.PtrToStringAnsi(m.WParam);
                     tstb_CurrentPath.Text = path;
+                    Marshal.FreeHGlobal(m.WParam);
                     break;
 
                 case cls_Msg.ASSIGN_PATH:
                     this.currentPath = tstb_CurrentPath.Text;
+                    break;
+
+                case cls_Msg.CREATE_FOLDER:
+                    string target = Marshal.PtrToStringAnsi(m.WParam);
+                    CreateFolder(target);
+                    Marshal.FreeHGlobal(m.WParam);
                     break;
 
                 default:
