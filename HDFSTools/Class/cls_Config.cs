@@ -9,7 +9,7 @@ namespace HDFSTools
     {
 
         #region Properties
-        public static cls_Config config;
+        private static cls_Config config;
         public static string host;
         public static string port;
         public static string userName;

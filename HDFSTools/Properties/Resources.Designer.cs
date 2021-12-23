@@ -83,6 +83,16 @@ namespace HDFSTools.Properties {
         /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
+        internal static System.Drawing.Bitmap delete {
+            get {
+                object obj = ResourceManager.GetObject("delete", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
         internal static System.Drawing.Bitmap DetailImage {
             get {
                 object obj = ResourceManager.GetObject("DetailImage", resourceCulture);
@@ -156,6 +166,16 @@ namespace HDFSTools.Properties {
         internal static System.Drawing.Bitmap icons8_arrow_pointing_left_48 {
             get {
                 object obj = ResourceManager.GetObject("icons8-arrow-pointing-left-48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap icons8_exit_to_rescue_from_a_natural_calamity_of_fire_28 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-exit-to-rescue-from-a-natural-calamity-of-fire-28", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

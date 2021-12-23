@@ -56,6 +56,9 @@
     <Reference Include="Microsoft.Hadoop.WebClient, Version=0.12.5126.42915, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Hadoop.WebClient.0.12.5126.42915\lib\net40\Microsoft.Hadoop.WebClient.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
@@ -64,6 +67,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.0.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -108,12 +114,21 @@
     <Compile Include="Form\frm_Config.Designer.cs">
       <DependentUpon>frm_Config.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\frm_CreateFolder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\frm_CreateFolder.Designer.cs">
+      <DependentUpon>frm_CreateFolder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\frm_Main.resx">
       <DependentUpon>frm_Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form\frm_Config.resx">
       <DependentUpon>frm_Config.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\frm_CreateFolder.resx">
+      <DependentUpon>frm_CreateFolder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -125,6 +140,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="Config\packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -143,6 +159,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\icons8-exit-to-rescue-from-a-natural-calamity-of-fire-28.png" />
+    <None Include="Resource\icons8-exit-64.png" />
     <None Include="Resource\icons8-arrow-48.png" />
     <None Include="Resource\icons8-arrow-pointing-left-48.png" />
     <None Include="Resource\undo.png" />
@@ -164,6 +182,7 @@
     <None Include="Resource\smallImage.png" />
     <None Include="Resource\bigImage.png" />
     <None Include="Resource\DetailImage.png" />
+    <None Include="Resource\delete.ico" />
     <Content Include="Resource\favicon.ico" />
     <None Include="Resource\right.png" />
     <None Include="Resource\left.png" />
